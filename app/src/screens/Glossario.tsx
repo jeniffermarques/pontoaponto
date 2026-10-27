@@ -54,23 +54,23 @@ export function Glossario() {
   const gsel = deco(termByAb(a.glossSel) ?? TERMS[2]);
   return (
     <div className="screen glossario">
-      <div className="row between end gap-20 wrap">
-        <h1 className="h-screen">Glossário</h1>
-        {search}
-      </div>
+      <h1 className="h-screen">Glossário</h1>
+      <StartHere />
       <div className="glossario-grid">
         <div className="col gap-14">
-          <StartHere />
+          {search}
           {empty}
           {groups.map(gr => (
-            <div key={gr.title} className="col gap-4">
+            <div key={gr.title} className="col gap-8">
               <div className="eyebrow group-t">{gr.title}</div>
               {gr.items.map(t => (
                 <button key={t.ab} type="button" className={'gw-item' + (a.glossSel === t.ab ? ' on' : '')}
                   aria-current={a.glossSel === t.ab ? 'true' : undefined} onClick={() => a.setGlossSel(t.ab)}>
                   <span className={'gw-sym' + (t.hasSym ? '' : ' txt')}>{t.symShow}</span>
-                  <span className="gw-name">{t.pt}</span>
-                  <span className="mono-11 muted">{t.ab} · {t.en}</span>
+                  <span className="gw-body">
+                    <span className="gw-name">{t.pt}</span>
+                    <span className="mono-11 muted">{t.ab} · {t.en}</span>
+                  </span>
                 </button>
               ))}
             </div>
@@ -87,7 +87,7 @@ export function Glossario() {
           </div>
           <div className="body-17">{gsel.desc}</div>
           <div className="col gap-12">
-            <div className="eyebrow">Passo a passo</div>
+            <h2 className="gd-h">Passo a passo</h2>
             {gsel.stepList.map(p => (
               <div key={p.n} className="step">
                 <span className="step-n step-30">{p.n}</span>
@@ -98,7 +98,7 @@ export function Glossario() {
           <div className="gd-notes">
             <div className="note note-blue"><div className="note-t">Quando usar</div><div>{gsel.use}</div></div>
             <div className="note note-pink"><div className="note-t">Cuidado com</div><div>{gsel.tip}</div></div>
-            <div className="note note-grey"><div className="note-t">Na receita aparece assim</div><div className="mono-13">{gsel.ex}</div></div>
+            <div className="note note-lilac"><div className="note-t">Na receita aparece assim</div><div className="mono-13">{gsel.ex}</div></div>
           </div>
         </div>
       </div>

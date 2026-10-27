@@ -134,7 +134,6 @@ button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .note-t { font-size: 12px; font-weight: 700; line-height: normal; }
 .note-blue { background: var(--baby); } .note-blue .note-t { color: var(--blue-ink); }
 .note-pink { background: var(--pink-soft); } .note-pink .note-t { color: var(--pink-ink); }
-.note-grey { background: var(--bg); } .note-grey .note-t { color: var(--ink-2); }
 .example { font-family: var(--f-mono); font-size: 13px; background: var(--bg); border-radius: 10px; padding: 8px 12px; }
 
 .sym-tile {
@@ -436,26 +435,35 @@ button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .g-use { font-size: 13px; line-height: 1.4; color: var(--ink-2); }
 .g-more { font-size: 13px; font-weight: 700; color: var(--primary-ink); margin-top: 2px; }
 
-.is-desktop .search { width: 320px; height: 44px; }
-.glossario-grid { display: grid; grid-template-columns: minmax(0,.85fr) minmax(0,1.4fr); gap: 24px; align-items: start; }
-.is-desktop .group-t { padding: 6px 4px; }
-.gw-item { text-align: left; border: 1.5px solid var(--line); background: #fff; border-radius: 14px; padding: 8px 12px; display: flex; gap: 12px; align-items: center; color: var(--ink); }
+.is-desktop .glossario .start-here { border-radius: 22px; padding: 20px 22px; gap: 6px; }
+.is-desktop .glossario .start-here-t { color: var(--pink-ink); }
+.is-desktop .glossario .start-here-x { font-size: 16px; line-height: 1.55; color: var(--ink); }
+/* Computador: lista à esquerda e o ponto escolhido ao lado, em qualquer largura. */
+.glossario-grid { display: grid; grid-template-columns: minmax(220px, .8fr) minmax(0, 1.25fr); gap: 24px; align-items: start; }
+.is-desktop .group-t { padding: 6px 2px 0; }
+.gw-item { text-align: left; border: 1.5px solid var(--line); background: #fff; border-radius: 18px; padding: 12px 14px; display: flex; gap: 14px; align-items: center; color: var(--ink); }
+.gw-item:hover { border-color: var(--focus); }
 .gw-item.on { border-color: var(--primary); background: var(--primary-soft); }
-.gw-sym { width: 36px; height: 36px; border-radius: 10px; background: var(--primary-soft); color: var(--primary-ink); font-size: 18px; }
-.gw-sym.txt { font-size: 11px; }
-.gw-name { flex: 1; font-size: 15px; font-weight: 700; }
-.g-detail { padding: 28px; display: flex; flex-direction: column; gap: 20px; position: sticky; top: 0; }
-.gd-sym { width: 72px; height: 72px; border-radius: 20px; background: var(--pink-soft); color: var(--pink-ink); font-size: 34px; }
-.gd-sym.txt { font-size: 16px; }
-.gd-name { font-family: var(--f-title); font-size: 30px; font-weight: 600; line-height: 1.1; }
-.gd-notes { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 12px; }
-.gd-notes .note { padding: 14px; }
+.gw-sym { width: 44px; height: 44px; border-radius: 50%; background: var(--primary-soft); color: var(--primary-ink); font-size: 18px; }
+.gw-item.on .gw-sym { background: #fff; }
+.gw-sym.txt { font-family: var(--f-title); font-size: 15px; font-weight: 600; }
+.gw-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+.gw-name { font-family: var(--f-title); font-size: 17px; font-weight: 600; }
+.g-detail { padding: 24px; display: flex; flex-direction: column; gap: 18px; position: sticky; top: 0; }
+.gd-sym { width: 64px; height: 64px; border-radius: 18px; background: var(--primary-soft); color: var(--primary-ink); font-size: 28px; }
+.gd-sym.txt { font-family: var(--f-title); font-size: 18px; }
+.gd-name { font-family: var(--f-title); font-size: 24px; font-weight: 600; line-height: 1.15; }
+.gd-h { margin: 0; font-family: var(--f-title); font-size: 18px; font-weight: 600; }
+.g-detail .body-17 { font-size: 16px; line-height: 1.65; }
+/* Os 3 cartões ficam lado a lado quando cabem, e um embaixo do outro quando o painel é estreito. */
+.gd-notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(170px, 1fr)); gap: 12px; }
+.gd-notes .note { padding: 14px 16px; border-radius: 18px; }
+.note-lilac { background: var(--primary-soft); } .note-lilac .note-t { color: var(--primary-ink); }
 
 /* Computador estreito (tablet): as colunas viram uma só. */
 @media (max-width: 1100px) {
-  .contador-grid, .is-desktop .tradutor-grid, .grafico-grid, .glossario-grid, .inicio-mid { grid-template-columns: minmax(0,1fr); }
-  .g-detail { position: static; }
-  .gd-notes { grid-template-columns: minmax(0,1fr); }
+  .contador-grid, .is-desktop .tradutor-grid, .grafico-grid, .inicio-mid { grid-template-columns: minmax(0,1fr); }
+  .glossario-grid { gap: 16px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
