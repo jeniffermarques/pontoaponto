@@ -24,18 +24,18 @@ export interface Detail {
 }
 
 export const TERMS: TranslatableTerm[] = [
-  { keys: ['corrente', 'corr', 'ch'], pt: 'corrente', pl: 'correntes', ab: 'corr', en: 'ch', sym: '○', desc: 'Faça uma laçada e puxe pela alça que está na agulha. É a base de quase toda receita.' },
-  { keys: ['ponto baixíssimo', 'sl st', 'slst', 'pbx'], pt: 'ponto baixíssimo', pl: 'pontos baixíssimos', ab: 'pbx', en: 'sl st', sym: '•', desc: 'Insira a agulha no ponto, faça uma laçada e puxe direto pelo ponto e pela alça da agulha. Usado para fechar voltas.' },
-  { keys: ['ponto baixo', 'sc', 'pb'], pt: 'ponto baixo', pl: 'pontos baixos', ab: 'pb', en: 'sc', sym: '×', desc: 'Insira a agulha no ponto e puxe uma laçada (ficam 2 alças). Faça outra laçada e passe pelas 2 alças.' },
-  { keys: ['meio ponto alto', 'hdc', 'mpa'], pt: 'meio ponto alto', pl: 'meios pontos altos', ab: 'mpa', en: 'hdc', sym: 'T', desc: 'Faça 1 laçada, insira no ponto e puxe (ficam 3 alças). Faça outra laçada e passe pelas 3 de uma vez.' },
-  { keys: ['ponto alto duplo', 'tr', 'pad'], pt: 'ponto alto duplo', pl: 'pontos altos duplos', ab: 'pad', en: 'tr', sym: '‡', desc: 'Faça 2 laçadas, insira no ponto e puxe. Depois feche de 2 em 2 alças, três vezes.' },
-  { keys: ['ponto alto', 'dc', 'pa'], pt: 'ponto alto', pl: 'pontos altos', ab: 'pa', en: 'dc', sym: 'Ŧ', desc: 'Faça 1 laçada, insira no ponto e puxe (3 alças). Laçada e passe por 2. Laçada e passe pelas 2 últimas.' },
-  { keys: ['aumento', 'inc', 'aum'], pt: 'aumento', pl: 'aumentos', ab: 'aum', en: 'inc', sym: 'V', desc: 'Faça 2 pontos baixos no mesmo ponto. A peça ganha 1 ponto.' },
-  { keys: ['diminuição', 'dec', 'dim'], pt: 'diminuição', pl: 'diminuições', ab: 'dim', en: 'dec', sym: 'Λ', desc: 'Junte 2 pontos em 1: puxe uma laçada no 1º ponto, outra no 2º, e feche tudo junto. A peça perde 1 ponto.' },
-  { keys: ['anel mágico', 'magic ring', 'mr', 'am'], pt: 'anel mágico', pl: 'anel mágico', ab: 'AM', en: 'MR', sym: '◎', desc: 'Um círculo de fio ajustável onde você faz os primeiros pontos. No final, puxe a ponta e ele fecha sem deixar furo.' },
-  { keys: ['laçada', 'yo'], pt: 'laçada', pl: 'laçadas', ab: 'laç', en: 'yo', sym: '', desc: 'Passe o fio por cima da agulha, de trás para a frente.' },
-  { keys: ['blo'], pt: 'só na alça de trás', pl: 'só na alça de trás', ab: 'alça tr.', en: 'BLO', sym: '', desc: 'Em vez de pegar as 2 alças do ponto, pegue só a de trás. Cria uma linha marcada na peça.' },
-  { keys: ['flo'], pt: 'só na alça da frente', pl: 'só na alça da frente', ab: 'alça fr.', en: 'FLO', sym: '', desc: 'Pegue só a alça da frente do ponto, a que está mais perto de você.' },
+  { keys: ['corrente', 'corr', 'chains', 'chain', 'ch'], pt: 'corrente', pl: 'correntes', ab: 'corr', en: 'ch', sym: '○', desc: 'Faça uma laçada e puxe pela alça que está na agulha. É a base de quase toda receita.' },
+  { keys: ['ponto baixíssimo', 'slip stitches', 'slip stitch', 'sl sts', 'sl st', 'slst', 'pbx'], pt: 'ponto baixíssimo', pl: 'pontos baixíssimos', ab: 'pbx', en: 'sl st', sym: '•', desc: 'Insira a agulha no ponto, faça uma laçada e puxe direto pelo ponto e pela alça da agulha. Usado para fechar voltas.' },
+  { keys: ['ponto baixo', 'single crochets', 'single crochet', 'sc', 'pb'], pt: 'ponto baixo', pl: 'pontos baixos', ab: 'pb', en: 'sc', sym: '×', desc: 'Insira a agulha no ponto e puxe uma laçada (ficam 2 alças). Faça outra laçada e passe pelas 2 alças.' },
+  { keys: ['meio ponto alto', 'half double crochets', 'half double crochet', 'hdc', 'mpa'], pt: 'meio ponto alto', pl: 'meios pontos altos', ab: 'mpa', en: 'hdc', sym: 'T', desc: 'Faça 1 laçada, insira no ponto e puxe (ficam 3 alças). Faça outra laçada e passe pelas 3 de uma vez.' },
+  { keys: ['ponto alto duplo', 'treble crochets', 'treble crochet', 'triple crochet', 'treble', 'tr', 'pad'], pt: 'ponto alto duplo', pl: 'pontos altos duplos', ab: 'pad', en: 'tr', sym: '‡', desc: 'Faça 2 laçadas, insira no ponto e puxe. Depois feche de 2 em 2 alças, três vezes.' },
+  { keys: ['ponto alto', 'double crochets', 'double crochet', 'dc', 'pa'], pt: 'ponto alto', pl: 'pontos altos', ab: 'pa', en: 'dc', sym: 'Ŧ', desc: 'Faça 1 laçada, insira no ponto e puxe (3 alças). Laçada e passe por 2. Laçada e passe pelas 2 últimas.' },
+  { keys: ['aumento', 'increases', 'increase', 'inc', 'aum'], pt: 'aumento', pl: 'aumentos', ab: 'aum', en: 'inc', sym: 'V', desc: 'Faça 2 pontos baixos no mesmo ponto. A peça ganha 1 ponto.' },
+  { keys: ['diminuição', 'invisible decreases', 'invisible decrease', 'invisible dec', 'inv dec', 'invdec', 'sc2tog', 'sc dec', 'decreases', 'decrease', 'dec', 'dim'], pt: 'diminuição', pl: 'diminuições', ab: 'dim', en: 'dec', sym: 'Λ', desc: 'Junte 2 pontos em 1: puxe uma laçada no 1º ponto, outra no 2º, e feche tudo junto. A peça perde 1 ponto.' },
+  { keys: ['anel mágico', 'magic ring', 'magic circle', 'magic loop', 'adjustable ring', 'mr', 'am'], pt: 'anel mágico', pl: 'anel mágico', ab: 'AM', en: 'MR', sym: '◎', desc: 'Um círculo de fio ajustável onde você faz os primeiros pontos. No final, puxe a ponta e ele fecha sem deixar furo.' },
+  { keys: ['laçada', 'yarn over hook', 'yarn over', 'yoh', 'yo'], pt: 'laçada', pl: 'laçadas', ab: 'laç', en: 'yo', sym: '', desc: 'Passe o fio por cima da agulha, de trás para a frente.' },
+  { keys: ['in the back loop only', 'in back loop only', 'in back loops only', 'back loop only', 'back loops only', 'in the blo', 'in blo', 'blo only', 'blo'], pt: 'só na alça de trás', pl: 'só na alça de trás', ab: 'alça tr.', en: 'BLO', sym: '', desc: 'Em vez de pegar as 2 alças do ponto, pegue só a de trás. Cria uma linha marcada na peça.' },
+  { keys: ['in the front loop only', 'in front loop only', 'in front loops only', 'front loop only', 'front loops only', 'in the flo', 'in flo', 'flo only', 'flo'], pt: 'só na alça da frente', pl: 'só na alça da frente', ab: 'alça fr.', en: 'FLO', sym: '', desc: 'Pegue só a alça da frente do ponto, a que está mais perto de você.' },
 ];
 
 /** Entradas do glossário que o tradutor não destaca. */
@@ -45,12 +45,83 @@ export const EXTRA: Term[] = [
   { pt: 'carreira', ab: 'carr', en: 'Row', sym: '⇄', desc: 'Quando o trabalho é reto, de um lado ao outro. No fim de cada carreira, você vira a peça.' },
 ];
 
+const ST = '(?:sts?|stitch(?:es)?)';
+const pl = (n: string, one: string, many: string) => (n === '1' ? one : many);
+const inchToCm = (n: string) => Math.round(parseFloat(n.replace(',', '.')) * 2.54);
+
+/**
+ * Expressões em inglês traduzidas como texto normal. Só entram palavras que não existem
+ * em português, para não estragar receitas que já estão em português ("do", "as", "a", "for" ficam de fora).
+ * O número no fim de uma expressão com RegExp é o tamanho usado para ordenar (as mais longas são tentadas primeiro).
+ */
 export const PHRASES: [string | RegExp, string | ((m: RegExpExecArray) => string), number?][] = [
-  ['in each st around', 'em cada ponto da volta'], ['in each stitch around', 'em cada ponto da volta'], ['in each st', 'em cada ponto'],
-  ['in next st', 'no próximo ponto'], ['in same st', 'no mesmo ponto'], ['fasten off', 'arremate'], ['leave a long tail', 'deixe uma ponta longa'],
-  [/repeat\s+(\d+)\s+times/, r => 'repita ' + r[1] + ' vezes', 14], [/x\s*(\d+)/, r => 'repita ' + r[1] + ' vezes', 2],
-  ['repeat', 'repita'], ['times', 'vezes'], ['around', 'na volta toda'], ['stitches', 'pontos'], ['stitch', 'ponto'], ['each', 'cada'], ['turn', 'vire o trabalho'],
-  ['stuff', 'encha com fibra'], ['join', 'una'], ['with', 'com'], ['and', 'e'], ['next', 'próximo'], ['into', 'em'], ['in', 'no'], ['sts', 'pontos'], ['st', 'ponto'], ['pts', 'pontos'], ['pt', 'ponto'],
+  // Onde trabalhar
+  ['in each st around', 'em cada ponto da volta'], ['in each stitch around', 'em cada ponto da volta'],
+  ['in each st across', 'em cada ponto até o fim da carreira'], ['in each stitch across', 'em cada ponto até o fim da carreira'],
+['in each st', 'em cada ponto'], ['in each stitch', 'em cada ponto'], ['in each', 'em cada'],
+  [new RegExp(`in\\s+each\\s+of\\s+(?:the\\s+)?next\\s+(\\d+)\\s+${ST}`), r => `em cada um dos próximos ${r[1]} pontos`, 30],
+  [new RegExp(`in\\s+(?:the\\s+)?next\\s+(\\d+)\\s+${ST}`), r => pl(r[1], 'no próximo ponto', `nos próximos ${r[1]} pontos`), 20],
+  [new RegExp(`(?:the\\s+)?next\\s+(\\d+)\\s+${ST}`), r => pl(r[1], 'o próximo ponto', `os próximos ${r[1]} pontos`), 17],
+  // "in 2nd ch" vira "na 2ª" e deixa "ch" para virar o termo "corrente" (clicável).
+  [/in\s+(?:the\s+)?(\d+)(?:st|nd|rd|th)(?=\s+(?:ch|chain)\b)/, r => `na ${r[1]}ª`, 30],
+  [/(\d+)(?:st|nd|rd|th)(?=\s+(?:ch|chain)\b)/, r => `${r[1]}ª`, 26],
+  [/(\d+)(?:st|nd|rd|th)(?![a-z])/, r => r[1] + 'º', 4],
+  ['in the next st', 'no próximo ponto'], ['in next st', 'no próximo ponto'], ['in the next stitch', 'no próximo ponto'], ['in next stitch', 'no próximo ponto'],
+  ['in the same st', 'no mesmo ponto'], ['in same st', 'no mesmo ponto'], ['in the same stitch', 'no mesmo ponto'], ['in same stitch', 'no mesmo ponto'],
+  ['skip next st', 'pule o próximo ponto'], ['skip the next st', 'pule o próximo ponto'], ['sk next st', 'pule o próximo ponto'],
+  ['in both loops', 'nas 2 alças'], ['both loops', 'as 2 alças'],
+  ['into the magic ring', 'dentro do anel mágico'], ['into the ring', 'dentro do anel'], ['in the ring', 'no anel'], ['ring', 'anel'],
+  ['to form a ring', 'para formar um anel'], ['form a ring', 'forme um anel'], ['into ring', 'dentro do anel'], ['in ring', 'no anel'],
+  ['into the next', 'no próximo'], ['into next', 'no próximo'], ['in the next', 'no próximo'], ['in next', 'no próximo'],
+  ['to top of', 'no topo de'], ['to close the top', 'para fechar o topo'], ['to close', 'para fechar'], ['the top', 'o topo'],
+  ['being careful not to twist', 'com cuidado para não torcer'], ['without twisting', 'sem torcer'], ['twist', 'torcer'],
+  [/(leave|leaving)\s+an?\s+(\d+(?:[.,]\d+)?)[-\s]*(?:inch(?:es)?|in\.?|")\s+(?:long\s+)?tail/, r => `${/ing/i.test(r[1]) ? 'deixando' : 'deixe'} uma ponta de ${inchToCm(r[2])} cm`, 30],
+  [/(\d+(?:[.,]\d+)?)[-\s]*(?:inch(?:es)?|")(?![a-z])/, r => `${inchToCm(r[1])} cm`, 8],
+  ['leaving a long tail', 'deixando uma ponta longa'], ['leaving', 'deixando'], ['using', 'usando'],
+  ['from hook', 'a partir da agulha'], ['ch-sp', 'espaço de corrente'], ['ch sp', 'espaço de corrente'], ['chain space', 'espaço de corrente'],
+  ['across', 'até o fim da carreira'], ['around', 'na volta toda'],
+  ['dc2tog', '2 pontos altos fechados juntos'], ['hdc2tog', '2 meios pontos altos fechados juntos'],
+  // Repetições
+  [/repeat\s+(\d+)\s+times/, r => 'repita ' + r[1] + ' vezes', 14], [/rep\s+(\d+)\s+times/, r => 'repita ' + r[1] + ' vezes', 11],
+  [/(\d+)\s+more\s+times/, r => 'mais ' + r[1] + ' vezes', 12],
+  [/(?:repeat|rep)\s+from\s+\*\s+(?:to\s+(?:the\s+)?end|across)/, () => 'repita a partir do * até o fim', 26],
+  [/(?:repeat|rep)\s+from\s+\*\s+around/, () => 'repita a partir do * na volta toda', 22],
+  [/(?:repeat|rep)\s+from\s+\*/, () => 'repita a partir do *', 16],
+  [/(?:repeat|rep)\s+(rows|rounds|rnds)\s+(\d+)\s*(?:and|-|–|to|through)\s*(\d+)/, r => `repita as ${/row/i.test(r[1]) ? 'carreiras' : 'voltas'} ${r[2]} ${/and/i.test(r[0]) ? 'e' : 'a'} ${r[3]}`, 24],
+  [/(?:repeat|rep)\s+(row|round|rnd)\s+(\d+)/, r => `repita a ${/row/i.test(r[1]) ? 'carreira' : 'volta'} ${r[2]}`, 14],
+  [/x\s*(\d+)/, r => 'repita ' + r[1] + ' vezes', 2], [/(\d+)x(?![a-z0-9])/, r => 'repita ' + r[1] + ' vezes', 2],
+  ['repeat', 'repita'], ['rep', 'repita'], ['times', 'vezes'], ['time', 'vez'],
+  // Ações
+  ['do not turn', 'não vire o trabalho'], ["don't turn", 'não vire o trabalho'], ['turn', 'vire o trabalho'],
+  ['work in continuous rounds', 'trabalhe em espiral, sem fechar as voltas'], ['in continuous rounds', 'em espiral, sem fechar as voltas'],
+  ['work in the round', 'trabalhe em voltas'], ['work in rounds', 'trabalhe em voltas'], ['work in rows', 'trabalhe em carreiras'],
+  ['join with a', 'una com um'], ['to join', 'para unir'], ['join', 'una'],
+  ['make a', 'faça um'], ['make an', 'faça um'], ['make', 'faça'], ['work', 'trabalhe'], ['working', 'trabalhando'],
+  ['fasten off', 'arremate'], ['fo', 'arremate'], ['leave a long tail for sewing', 'deixe uma ponta longa para costurar'], ['leave a long tail', 'deixe uma ponta longa'],
+  ['weave in all ends', 'esconda todas as pontas'], ['weave in the ends', 'esconda as pontas'], ['weave in ends', 'esconda as pontas'], ['weave in', 'esconda'],
+  ['start stuffing', 'comece a encher'], ['stuff firmly', 'encha bem com fibra'], ['stuff', 'encha com fibra'], ['polyfill stuffing', 'fibra para enchimento'], ['fiberfill stuffing', 'fibra para enchimento'], ['stuffing', 'fibra para enchimento'],
+  ['place marker', 'coloque o marcador'], ['pm', 'coloque o marcador'], ['skip', 'pule'], ['sk', 'pule'],
+  ['counts as', 'conta como'], ['does not count as a st', 'não conta como ponto'], ['does not count as a stitch', 'não conta como ponto'],
+  ['change color', 'troque de cor'], ['change to', 'troque para'], ['sew', 'costure'], ['attach', 'prenda'], ['insert hook', 'insira a agulha'],
+  ['pull through', 'puxe por'], ['draw up a loop', 'puxe uma alça'], ['pull up a loop', 'puxe uma alça'], ['pull', 'puxe'], ['cut yarn', 'corte o fio'], ['cut', 'corte'],
+  ['close', 'feche'], ['continue', 'continue'], ['end with', 'termine com'], ['evenly', 'distribuídos por igual'],
+  // Lugares e coisas
+  ['to the top of', 'no topo de'], ['top of', 'topo de'], ['to the first', 'no primeiro'], ['to first', 'no primeiro'],
+  ['to the end', 'até o fim'], ['to end', 'até o fim'], ['at the end', 'no fim'],
+  [/(\d+(?:[.,]\d+)?)\s*mm\s+(?:crochet\s+)?hook/, r => `agulha de ${r[1]} mm`, 12],
+  ['crochet hook', 'agulha de crochê'], ['hook', 'agulha'], ['yarn needle', 'agulha de tapeçaria'], ['tapestry needle', 'agulha de tapeçaria'],
+  ['stitch markers', 'marcadores de ponto'], ['stitch marker', 'marcador de ponto'], ['marker', 'marcador'],
+  ['worsted weight yarn', 'fio médio (worsted)'], ['dk weight yarn', 'fio fino (DK)'], ['yarn', 'fio'], ['polyfill', 'fibra'], ['fiberfill', 'fibra'],
+  ['safety eyes', 'olhos de segurança'], ['scissors', 'tesoura'], ['materials', 'materiais'], ['gauge', 'amostra (tensão)'],
+  ['beginning', 'início'], ['beg', 'início'], ['loops', 'alças'], ['loop', 'alça'], ['ends', 'pontas'], ['end', 'fim'], ['tail', 'ponta'],
+  ['space', 'espaço'], ['sp', 'espaço'], ['color', 'cor'], ['colour', 'cor'], ['side', 'lado'], ['piece', 'peça'],
+  ['the head', 'a cabeça'], ['the body', 'o corpo'], ['head', 'cabeça'], ['body', 'corpo'], ['arms', 'braços'], ['arm', 'braço'], ['legs', 'pernas'], ['leg', 'perna'], ['ears', 'orelhas'], ['ear', 'orelha'],
+  ['rs', 'lado direito'], ['ws', 'avesso'], ['rows', 'carreiras'], ['row', 'carreira'], ['rounds', 'voltas'], ['round', 'volta'], ['rnds', 'voltas'], ['rnd', 'volta'],
+  ['stitches', 'pontos'], ['stitch', 'ponto'], ['sts', 'pontos'], ['st', 'ponto'], ['pts', 'pontos'], ['pt', 'ponto'],
+  // Palavrinhas
+  ['each', 'cada'], ['the next', 'o próximo'], ['next', 'próximo'], ['first', 'primeiro'], ['second', 'segundo'], ['last', 'último'], ['same', 'mesmo'],
+  ['remaining', 'restantes'], ['only', 'só'], ['more', 'mais'], ['then', 'depois'], ['until', 'até'], ['between', 'entre'], ['not', 'não'], ['or', 'ou'],
+  ['with', 'com'], ['and', 'e'], ['into', 'em'], ['in', 'no'], ['of', 'de'], ['from', 'de'], ['to', 'para'], ['at', 'em'], ['on', 'em'], ['an', 'um'], ['the', ''],
 ];
 
 export const DETAILS: Record<string, Detail> = {

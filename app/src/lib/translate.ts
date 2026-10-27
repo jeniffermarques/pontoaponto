@@ -31,8 +31,26 @@ PHRASES.forEach(([p, out, len]) => MATCHERS.push(typeof p === 'string'
   : { re: new RegExp(p.source, 'iy'), len: len ?? 0, out }));
 MATCHERS.sort((a, b) => b.len - a.len);
 
-const LABEL_RE = /^(rnds?|rounds?|rows?|r|v|vt|voltas?|carr|carreiras?)\.?\s*(\d+)(?:\s*(?:-|–|a|to)\s*(\d+))?\s*[:.)-]?\s*/i;
-const TOTAL_RE = /\(\s*(\d+)\s*(?:sts?|pts?|pontos)?\s*\)\s*\.?\s*$/i;
+const LABEL_RE = /^(rnds?|rounds?|rows?|r|v|vt|voltas?|carr|carreiras?)\.?\s*(\d+)(?:\s*(?:-|–|a|to|até)\s*(?:[a-z]+\.?\s*)?(\d+))?\s*[:.)-]?\s*/i;
+// Total no fim da linha: "(18)", "(18 sts)", "[18 sc]", "(18 sts total)", "- 18 sts", "= 18".
+const UNIT = '(?:sts?|stitches|pts?|pontos|sc|dc|hdc|tr|ch|pb|pa|mpa|corr)';
+const TOTAL_RE = new RegExp(`(?:[([]\\s*(\\d+)\\s*(?:${UNIT}\\.?)?(?:\\s*total)?\\s*[)\\]]|[-–—]\\s*(\\d+)\\s*${UNIT}|=\\s*(\\d+)\\s*${UNIT}?)\\s*\\.?\\s*$`, 'i');
+
+/** Coloca o número antes da corrente ("ch 21" vira "21 ch") para virar "21 correntes". */
+const prepare = (s: string) => s
+  .replace(/\*([^*]+)\*/g, '($1)').replace(/\[([^\]]+)\]/g, '($1)')
+  .replace(/\b(?:the\s+)?(?:beginning|beg)\.?\s+ch(?:ain)?\s*-?\s*(\d+)\b/gi, '$1 ch do início')
+  .replace(/\bch(?:ain)?\s*-?\s*(\d+)\s*-?\s*(?:sp|space)\b/gi, 'espaço de $1 correntes')
+  .replace(/\bch(?:ain)?\s*-?\s*(\d+)\b(?!(?:st|nd|rd|th)\b)/gi, '$1 ch');
+
+/** Arruma espaços sobrando (de palavras que somem, como "the") e antes da pontuação. */
+function tidy(segs: Seg[]) {
+  const out = segs.map(g => g.term ? g : { text: g.text.replace(/ {2,}/g, ' ').replace(/ ([,.;:)])/g, '$1').replace(/\( /g, '(') }).filter(g => g.text);
+  if (out[0] && !out[0].term) out[0] = { text: out[0].text.trimStart() };
+  const last = out.length - 1;
+  if (last >= 0 && !out[last].term) out[last] = { text: out[last].text.trimEnd() };
+  return out.filter(g => g.text);
+}
 
 /** Traduz uma linha de receita. Devolve null para linhas vazias. */
 export function translateLine(raw: string): Line | null {
@@ -49,12 +67,12 @@ export function translateLine(raw: string): Line | null {
   }
   const tm = s.match(TOTAL_RE);
   if (tm) {
-    total = +tm[1];
+    total = +(tm[1] ?? tm[2] ?? tm[3]);
     s = s.slice(0, tm.index).trim();
   }
-  s = s.replace(/\*([^*]+)\*/g, '($1)').replace(/\[([^\]]+)\]/g, '($1)');
+  s = prepare(s);
 
-  const segs: Seg[] = [];
+  let segs: Seg[] = [];
   let buf = '';
   let i = 0;
   while (i < s.length) {
@@ -83,7 +101,14 @@ export function translateLine(raw: string): Line | null {
     }
   }
   if (buf) segs.push({ text: buf });
-  if (segs[0]) segs[0] = { ...segs[0], text: segs[0].text.charAt(0).toUpperCase() + segs[0].text.slice(1) };
+  segs = tidy(segs);
+  // Letra maiúscula no começo da linha e depois de ponto final.
+  const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
+  segs = segs.map((g, k) => {
+    const text = g.term ? g.text : g.text.replace(/([.!?]\s+)([a-zà-ü])/g, (_, p, c: string) => p + c.toUpperCase());
+    const startsSentence = k === 0 || /[.!?]\s*$/.test(segs[k - 1].text);
+    return { ...g, text: startsSentence ? cap(text) : text };
+  });
   return { raw, label, total, segs, plain: (label ? label + ': ' : '') + segs.map(g => g.text).join('') };
 }
 
