@@ -114,6 +114,7 @@ button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 .chip-blue { background: var(--baby); color: var(--blue-ink); }
 
 .notice { background: var(--baby); border-radius: 14px; padding: 10px 14px; font-size: 13px; font-weight: 600; color: var(--blue-ink); }
+.notice.error { background: var(--pink-soft); color: var(--pink-ink); }
 .empty { border: 1.5px dashed var(--line); border-radius: 16px; padding: 20px; text-align: center; font-size: 14px; color: var(--ink-2); }
 
 .step { display: flex; gap: 12px; align-items: flex-start; }
@@ -356,6 +357,8 @@ button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
   background: repeating-linear-gradient(135deg, #fff 0 10px, var(--bg) 10px 20px);
   padding: 20px; display: flex; flex-direction: column; align-items: center; gap: 10px; text-align: center;
 }
+.filedrop.over { border-color: var(--primary); background: var(--primary-soft); }
+.filedrop .btn:disabled { opacity: 1; cursor: progress; }
 .recipe-input {
   height: 130px; resize: none; border: 1px solid var(--line); border-radius: 16px; padding: 12px 14px; width: 100%;
   font-family: var(--f-mono); font-size: 12px; line-height: 1.6; color: var(--ink); background: #fff;

@@ -1,6 +1,12 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { CHART, PROJECT, SAMPLE_EN, SAMPLE_PT, type ScreenId, type SourceId } from './lib/data';
+import { isPdf, OcrError, readImage, readPdf } from './lib/ocr';
 import { parseSequence, translateLine, translateText } from './lib/translate';
+
+export interface Notice {
+  text: string;
+  error?: boolean;
+}
 
 const STORAGE_KEY = 'pontoaponto:v1';
 
@@ -51,8 +57,9 @@ function useAppState() {
   const [input, setInput] = useState(SAMPLE_EN);
   const [draft, setDraft] = useState('');
   const [src, setSrc] = useState<SourceId>('texto');
-  const [reading, setReading] = useState(false);
-  const [notice, setNotice] = useState('');
+  /** Texto de progresso enquanto lê uma foto ou PDF; null quando parado. */
+  const [readStatus, setReadStatus] = useState<string | null>(null);
+  const [notice, setNotice] = useState<Notice | null>(null);
   const [chartRow, setChartRow] = useState(0);
   const [chartReading, setChartReading] = useState(false);
   const [chartNotice, setChartNotice] = useState('');
@@ -98,17 +105,29 @@ function useAppState() {
   useEffect(() => () => timers.current.forEach(clearTimeout), []);
   const later = (fn: () => void, ms: number) => { timers.current.push(window.setTimeout(fn, ms)); };
 
-  // TODO: ler foto/PDF de verdade (OCR com um modelo de visão). Por enquanto carrega uma receita de exemplo.
-  const readSrc = () => {
-    if (reading) return;
-    const pdf = src === 'pdf';
-    setReading(true);
-    later(() => {
-      setReading(false);
+  const readFile = async (file: File) => {
+    if (readStatus) return;
+    const pdf = isPdf(file);
+    const what = pdf ? 'o PDF' : 'a foto';
+    setNotice(null);
+    setReadStatus(pdf ? 'Abrindo o PDF…' : 'Preparando o leitor…');
+    try {
+      const text = await (pdf ? readPdf : readImage)(file, setReadStatus);
+      if (!text) {
+        setNotice({ error: true, text: pdf
+          ? 'Não encontramos texto no PDF. Tente outro arquivo ou cole o texto.'
+          : 'Não encontramos texto na foto. Tente uma foto mais nítida e com boa luz, ou cole o texto.' });
+        return;
+      }
+      setInput(text);
       setSrc('texto');
-      setInput(pdf ? SAMPLE_PT : SAMPLE_EN);
-      setNotice(pdf ? 'Lemos o PDF. Confira se o texto está igual à receita.' : 'Lemos a foto. Confira se o texto está igual à receita.');
-    }, 1200);
+      setNotice({ text: `Lemos ${what}. Confira se o texto está igual à receita.` });
+    } catch (e) {
+      console.error(e);
+      setNotice({ error: true, text: e instanceof OcrError ? e.message : `Não conseguimos ler ${what}. Tente de novo ou cole o texto da receita.` });
+    } finally {
+      setReadStatus(null);
+    }
   };
 
   // TODO: reconhecer os símbolos de uma foto de gráfico. Por enquanto mostra o gráfico de exemplo.
@@ -123,11 +142,11 @@ function useAppState() {
     }, 1400);
   };
 
-  const pickSource = (id: SourceId) => { setSrc(id); setNotice(''); };
+  const pickSource = (id: SourceId) => { setSrc(id); setNotice(null); };
   const goTranslate = (source: SourceId, text?: string) => {
     if (text !== undefined) setInput(text);
     setSrc(source);
-    setNotice('');
+    setNotice(null);
     setScreen('tradutor');
   };
 
@@ -145,7 +164,7 @@ function useAppState() {
     // Tradutor
     input, setInput, lines: useMemo(() => translateText(input), [input]),
     loadEN: () => setInput(SAMPLE_EN), loadPT: () => setInput(SAMPLE_PT), clear: () => setInput(''),
-    src, pickSource, reading, readSrc, notice,
+    src, pickSource, readStatus, readFile, notice,
     draft, setDraft,
     translateDraft: () => { goTranslate('texto', draft.trim() ? draft : undefined); setDraft(''); },
     homeFoto: () => goTranslate('foto'), homePdf: () => goTranslate('pdf'),

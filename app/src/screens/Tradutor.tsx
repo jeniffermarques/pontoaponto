@@ -1,5 +1,6 @@
+import { useRef, useState } from 'react';
 import { SOURCES } from '../lib/data';
-import { useApp } from '../state';
+import { useApp, type Notice as NoticeData } from '../state';
 import { TermText } from '../components/TermText';
 
 function Sources() {
@@ -19,16 +20,31 @@ function Sources() {
 
 function FileDrop() {
   const a = useApp();
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [over, setOver] = useState(false);
   if (a.src === 'texto') return null;
   const pdf = a.src === 'pdf';
-  const label = a.reading ? 'Lendo a receita…'
+  const busy = a.readStatus !== null;
+  const label = busy ? a.readStatus
     : pdf ? (a.desktop ? 'Escolher arquivo PDF' : 'Escolher PDF')
-      : (a.desktop ? 'Enviar foto' : 'Tirar foto');
+      : (a.desktop ? 'Escolher foto' : 'Tirar ou escolher foto');
+  const read = (file?: File) => { if (file) void a.readFile(file); };
   return (
-    <div className="filedrop">
-      <span className="mono-12 muted">{pdf ? 'arquivo PDF da receita' : 'foto da receita'}</span>
-      <button type="button" className="btn btn-primary btn-44 px-18" onClick={a.readSrc} disabled={a.reading}>{label}</button>
-      <span className="tiny muted">No protótipo, usamos uma receita de exemplo.</span>
+    <div className={'filedrop' + (over ? ' over' : '')}
+      onDragOver={e => { e.preventDefault(); setOver(true); }}
+      onDragLeave={() => setOver(false)}
+      onDrop={e => { e.preventDefault(); setOver(false); read(e.dataTransfer.files[0]); }}>
+      <span className="mono-12 muted">
+        {a.desktop ? `arraste ${pdf ? 'o PDF' : 'a foto'} da receita para cá` : pdf ? 'arquivo PDF da receita' : 'foto da receita'}
+      </span>
+      <input ref={fileRef} type="file" hidden accept={pdf ? 'application/pdf,.pdf' : 'image/*'}
+        onChange={e => { read(e.target.files?.[0]); e.target.value = ''; }} />
+      <button type="button" className="btn btn-primary btn-44 px-18" onClick={() => fileRef.current?.click()} disabled={busy}
+        aria-live="polite">{label}</button>
+      <span className="tiny muted">
+        {pdf ? 'PDFs com texto são lidos na hora. PDFs escaneados demoram um pouco mais.'
+          : 'A leitura é feita no seu aparelho. Fotos retas, nítidas e com boa luz funcionam melhor.'}
+      </span>
     </div>
   );
 }
@@ -44,7 +60,9 @@ function Examples() {
   );
 }
 
-const Notice = ({ text }: { text: string }) => text ? <div className="notice" role="status">{text}</div> : null;
+const Notice = ({ notice }: { notice: NoticeData | null }) => notice
+  ? <div className={'notice' + (notice.error ? ' error' : '')} role={notice.error ? 'alert' : 'status'}>{notice.text}</div>
+  : null;
 
 function Chips({ label, total }: { label: string; total: number | null }) {
   return (
@@ -71,7 +89,7 @@ export function Tradutor() {
       </div>
       <Sources />
       <FileDrop />
-      <Notice text={a.notice} />
+      <Notice notice={a.notice} />
       <Examples />
       {editor}
       {heading}
@@ -96,7 +114,7 @@ export function Tradutor() {
         <div className="card tradutor-in">
           <Sources />
           <FileDrop />
-          <Notice text={a.notice} />
+          <Notice notice={a.notice} />
           <Examples />
           {editor}
         </div>

@@ -20,6 +20,16 @@ npm run build
 - `src/state.tsx`: estado do app.
 - `src/screens/`: Início, Contador, Traduzir, Gráfico e Glossário.
 
+## Leitura de foto e PDF (OCR)
+
+Tudo acontece no navegador, sem servidor e sem chave de API (`src/lib/ocr.ts`):
+
+- **Foto:** [tesseract.js](https://github.com/naptha/tesseract.js) com português + inglês (modo LSTM). A imagem é virada conforme a câmera e reduzida para no máximo 2400px.
+- **PDF com texto:** o [pdf.js](https://github.com/mozilla/pdf.js) extrai o texto direto, na hora.
+- **PDF escaneado:** se o PDF quase não tem texto, cada página (até 10) é desenhada e passa pelo OCR.
+
+O motor do OCR e os idiomas vêm dos pacotes npm e são copiados para `public/ocr/` por `scripts/copy-ocr-assets.mjs` (roda sozinho antes de `dev` e `build`). Assim o app não depende de CDN. A primeira leitura baixa cerca de 8 MB, e o navegador guarda esses arquivos para as próximas.
+
 ## Ainda não implementado
 
-Ler foto ou PDF de receita e reconhecer foto de gráfico precisam de OCR / IA com visão. Por enquanto esses botões carregam o exemplo, como no protótipo (procure os `TODO` em `src/state.tsx`).
+Reconhecer os símbolos numa foto de gráfico. O botão "Enviar foto do gráfico" ainda mostra o gráfico de exemplo (`TODO` em `src/state.tsx`).

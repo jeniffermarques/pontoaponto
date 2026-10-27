@@ -8,11 +8,17 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "test": "vitest run"
+    "test": "vitest run",
+    "predev": "node scripts/copy-ocr-assets.mjs",
+    "prebuild": "node scripts/copy-ocr-assets.mjs"
   },
   "dependencies": {
+    "@tesseract.js-data/eng": "^1.0.0",
+    "@tesseract.js-data/por": "^1.0.0",
+    "pdfjs-dist": "^6.4.299",
     "react": "^19.3.1",
-    "react-dom": "^19.3.1"
+    "react-dom": "^19.3.1",
+    "tesseract.js": "^7.0.0"
   },
   "devDependencies": {
     "@types/node": "^24.19.2",
