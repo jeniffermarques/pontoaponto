@@ -94,10 +94,10 @@ export function Tradutor() {
       {editor}
       {heading}
       {a.lines.length === 0 && <div className="empty">Cole uma receita acima ou toque em um exemplo.</div>}
-      {a.lines.map((l, i) => (
+      {a.lines.map((l, i) => l.heading ? <h2 key={i} className="line-heading">{l.raw.trim()}</h2> : (
         <div key={i} className="card line">
           {(l.label || l.total !== null) && <div className="row gap-6 wrap center"><Chips label={l.label} total={l.total} /></div>}
-          <div className="line-raw">{l.raw}</div>
+          {l.raw.trim() !== l.plain && <div className="line-raw">{l.raw}</div>}
           <TermText segs={l.segs} className="line-text" />
         </div>
       ))}
@@ -121,12 +121,12 @@ export function Tradutor() {
         <div className="col gap-12">
           {heading}
           {a.lines.length === 0 && <div className="empty">Cole uma receita ao lado ou escolha um exemplo.</div>}
-          {a.lines.map((l, i) => (
+          {a.lines.map((l, i) => l.heading ? <h2 key={i} className="line-heading">{l.raw.trim()}</h2> : (
             <div key={i} className="card line">
               <div className="col gap-6 start"><Chips label={l.label} total={l.total} /></div>
               <div className="col gap-4">
                 <TermText segs={l.segs} className="line-text" />
-                <div className="line-raw">{l.raw}</div>
+                {l.raw.trim() !== l.plain && <div className="line-raw">{l.raw}</div>}
               </div>
             </div>
           ))}

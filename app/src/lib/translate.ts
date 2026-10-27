@@ -9,6 +9,8 @@ export interface Line {
   raw: string;
   label: string;
   total: number | null;
+  /** Linha que só dá nome a uma parte, como "Vaso". */
+  heading: boolean;
   segs: Seg[];
   plain: string;
 }
@@ -31,7 +33,34 @@ PHRASES.forEach(([p, out, len]) => MATCHERS.push(typeof p === 'string'
   : { re: new RegExp(p.source, 'iy'), len: len ?? 0, out }));
 MATCHERS.sort((a, b) => b.len - a.len);
 
-const LABEL_RE = /^(rnds?|rounds?|rows?|r|v|vt|voltas?|carr|carreiras?)\.?\s*(\d+)(?:\s*(?:-|–|a|to|até)\s*(?:[a-z]+\.?\s*)?(\d+))?\s*[:.)-]?\s*/i;
+const NOUN = '(rnds?|rounds?|rows?|r|v|vt|voltas?|carr|carreiras?)';
+const RANGE = '(?:\\s*(-|–|a|e|and|to|até|through)\\s*';
+// "Rnd 1:", "V4 a V10:", "Rows 4-20:"
+const LABEL_RE = new RegExp(`^${NOUN}\\.?\\s*(\\d+)${RANGE}(?:[a-z]+\\.?\\s*)?(\\d+))?\\s*[:.)-]?\\s*`, 'i');
+// Jeito brasileiro, com o número antes: "1ª carr.:", "7ª a 10ª carr.:", "2ª e 3ª voltas:"
+const ORD = '\\s*[ªº°]?';
+const LABEL_PT_RE = new RegExp(`^(\\d+)${ORD}${RANGE}(\\d+)${ORD})?\\s*${NOUN}\\.?\\s*[:.)-]?\\s*`, 'i');
+
+function parseLabel(s: string) {
+  let noun: string, a: string, sep: string | undefined, b: string | undefined;
+  let m = s.match(LABEL_RE);
+  if (m) [, noun, a, sep, b] = m;
+  else if ((m = s.match(LABEL_PT_RE))) [, a, sep, b, noun] = m;
+  else return null;
+  const word = /^(rows?|carr|carreiras?)$/i.test(noun) ? 'Carreira' : 'Volta';
+  const label = b ? `${word}s ${a} ${/^(e|and)$/i.test(sep!) ? 'e' : 'a'} ${b}` : `${word} ${a}`;
+  return { label, rest: s.slice(m[0].length) };
+}
+
+/** Linha que só dá nome a uma parte da receita, como "Vaso" ou "Estrela (2)". */
+const isHeading = (s: string) => s.length <= 40 && !/[.:;,!?]$/.test(s) && !/^\d/.test(s) && !/^(com|with|usando|using|use)\b/i.test(s);
+
+// Asteriscos sem dizer quantas vezes: repetir até o fim da volta/carreira.
+const REPEAT_HINT = /^\s*(?:[x×]\s*\d|\d+\s*[x×]|rep\b|repeat|repita|repetir|around|across|\d+\s*(?:more\s+)?(?:times|vezes))/i;
+const REP_MARK = '\u0001';
+const STITCH = /\b(pb|pa|mpa|pbx|pad|corr|aum|dim|am|sc|dc|hdc|tr|ch|inc|dec|sl\s*st|sts?|pts?|mr)\b/i;
+// Abreviações que terminam com ponto mas não terminam a frase.
+const ABBR_END = /\b(carr|corr|pts?|aum|dim|rnds?|sts?|ch|sc|dc|hdc|tr|nº|ex|aprox)\.\s*$/i;
 // Total no fim da linha: "(18)", "(18 sts)", "[18 sc]", "(18 sts total)", "- 18 sts", "= 18".
 const UNIT = '(?:sts?|stitches|pts?|pontos|sc|dc|hdc|tr|ch|pb|pa|mpa|corr)';
 const TOTAL_RE = new RegExp(`(?:[([]\\s*(\\d+)\\s*(?:${UNIT}\\.?)?(?:\\s*total)?\\s*[)\\]]|[-–—]\\s*(\\d+)\\s*${UNIT}|=\\s*(\\d+)\\s*${UNIT}?)\\s*\\.?\\s*$`, 'i');
@@ -59,17 +88,15 @@ export function translateLine(raw: string): Line | null {
   let label = '';
   let total: number | null = null;
 
-  const lm = s.match(LABEL_RE);
-  if (lm) {
-    const noun = /^(rows?|carr|carreiras?)$/i.test(lm[1]) ? 'Carreira' : 'Volta';
-    label = lm[3] ? noun + 's ' + lm[2] + ' a ' + lm[3] : noun + ' ' + lm[2];
-    s = s.slice(lm[0].length);
-  }
+  const lm = parseLabel(s);
+  if (lm) ({ label, rest: s } = lm);
   const tm = s.match(TOTAL_RE);
-  if (tm) {
+  // "(6)" sozinho só é total de pontos numa carreira; em "Bolinhas (6)" é a quantidade de peças.
+  if (tm && (label || tm[1] === undefined || STITCH.test(s.slice(0, tm.index)) || /[a-z]/i.test(tm[0].replace(/total/i, '')))) {
     total = +(tm[1] ?? tm[2] ?? tm[3]);
     s = s.slice(0, tm.index).trim();
   }
+  s = s.replace(/\*([^*]+)\*/g, (all, _g, at: number, str: string) => REPEAT_HINT.test(str.slice(at + all.length)) ? all : all + REP_MARK);
   s = prepare(s);
 
   let segs: Seg[] = [];
@@ -101,15 +128,20 @@ export function translateLine(raw: string): Line | null {
     }
   }
   if (buf) segs.push({ text: buf });
+  const whole = label.startsWith('Volta') ? 'por toda a volta' : label ? 'por toda a carreira' : 'até o fim';
+  segs = segs.map(g => g.term ? g : { text: g.text.split(REP_MARK).join(' repita ' + whole) });
   segs = tidy(segs);
-  // Letra maiúscula no começo da linha e depois de ponto final.
+  // Letra maiúscula no começo da linha e depois de ponto final (mas não depois de "carr.", "pts.").
   const cap = (t: string) => t.charAt(0).toUpperCase() + t.slice(1);
   segs = segs.map((g, k) => {
-    const text = g.term ? g.text : g.text.replace(/([.!?]\s+)([a-zà-ü])/g, (_, p, c: string) => p + c.toUpperCase());
-    const startsSentence = k === 0 || /[.!?]\s*$/.test(segs[k - 1].text);
+    const text = g.term ? g.text : g.text.replace(/([.!?]\s+)([a-zà-ü])/g, (m, p: string, c: string, at: number, str: string) =>
+      ABBR_END.test(str.slice(0, at + 1)) ? m : p + c.toUpperCase());
+    const prev = k > 0 ? segs[k - 1].text : '';
+    const startsSentence = k === 0 || (/[.!?]\s*$/.test(prev) && !ABBR_END.test(prev));
     return { ...g, text: startsSentence ? cap(text) : text };
   });
-  return { raw, label, total, segs, plain: (label ? label + ': ' : '') + segs.map(g => g.text).join('') };
+  const heading = !label && total === null && !segs.some(g => g.term) && isHeading(s);
+  return { raw, label, total, heading, segs, plain: (label ? label + ': ' : '') + segs.map(g => g.text).join('') };
 }
 
 export const translateText = (text: string) =>

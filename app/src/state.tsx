@@ -1,6 +1,9 @@
-import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { CHART, PROJECT, SAMPLE_EN, SAMPLE_PT, type ScreenId, type SourceId } from './lib/data';
 import { isPdf, OcrError, readImage, readPdf } from './lib/ocr';
+import { SQUARE } from './lib/square';
+
+export type ChartKind = 'square' | 'reto';
 import { parseSequence, translateLine, translateText } from './lib/translate';
 
 export interface Notice {
@@ -60,8 +63,10 @@ function useAppState() {
   /** Texto de progresso enquanto lê uma foto ou PDF; null quando parado. */
   const [readStatus, setReadStatus] = useState<string | null>(null);
   const [notice, setNotice] = useState<Notice | null>(null);
+  /** Qual exemplo de gráfico está aberto: o square (em voltas) ou o pano reto (em carreiras). */
+  const [chartKind, setChartKind] = useState<ChartKind>('square');
   const [chartRow, setChartRow] = useState(0);
-  const [chartReading, setChartReading] = useState(false);
+  const [squareRound, setSquareRound] = useState(0);
   const [chartNotice, setChartNotice] = useState('');
 
   useEffect(() => {
@@ -101,9 +106,6 @@ function useAppState() {
     return () => window.removeEventListener('keydown', onKey);
   }, [desktop, screen, done, nextRow, plus]);
 
-  const timers = useRef<number[]>([]);
-  useEffect(() => () => timers.current.forEach(clearTimeout), []);
-  const later = (fn: () => void, ms: number) => { timers.current.push(window.setTimeout(fn, ms)); };
 
   const readFile = async (file: File) => {
     if (readStatus) return;
@@ -130,17 +132,10 @@ function useAppState() {
     }
   };
 
-  // TODO: reconhecer os símbolos de uma foto de gráfico. Por enquanto mostra o gráfico de exemplo.
-  const chartPhoto = () => {
-    if (chartReading) return;
-    setChartReading(true);
-    setChartNotice('');
-    later(() => {
-      setChartReading(false);
-      setChartRow(0);
-      setChartNotice('Encontramos 5 carreiras com corrente, ponto baixo e ponto alto.');
-    }, 1400);
-  };
+  // TODO: ler a foto com IA (opção 2), que devolveria os mesmos dados de src/lib/square.ts.
+  const chartPhoto = () => setChartNotice('Ler gráficos por foto ainda está em construção. Enquanto isso, veja abaixo como ler um gráfico, volta por volta.');
+  const chartLast = chartKind === 'square' ? SQUARE.rounds.length - 1 : CHART.length - 1;
+  const setChartStep = chartKind === 'square' ? setSquareRound : setChartRow;
 
   const pickSource = (id: SourceId) => { setSrc(id); setNotice(null); };
   const goTranslate = (source: SourceId, text?: string) => {
@@ -169,9 +164,10 @@ function useAppState() {
     translateDraft: () => { goTranslate('texto', draft.trim() ? draft : undefined); setDraft(''); },
     homeFoto: () => goTranslate('foto'), homePdf: () => goTranslate('pdf'),
     // Gráfico
-    chartRow, setChartRow, chartReading, chartPhoto, chartNotice,
-    chartPrev: () => setChartRow(r => Math.max(0, r - 1)),
-    chartNext: () => setChartRow(r => Math.min(CHART.length - 1, r + 1)),
+    chartKind, setChartKind, chartRow, setChartRow, squareRound, setSquareRound, chartPhoto, chartNotice,
+    chartStep: chartKind === 'square' ? squareRound : chartRow, chartLast,
+    chartPrev: () => setChartStep(r => Math.max(0, r - 1)),
+    chartNext: () => setChartStep(r => Math.min(chartLast, r + 1)),
   };
 }
 

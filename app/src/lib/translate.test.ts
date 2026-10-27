@@ -65,6 +65,26 @@ describe('translateLine', () => {
     expect(plain('Carr 1: 20 corr, volte e faça 19 pb (19)')).toBe('Carreira 1: 20 correntes, volte e faça 19 pontos baixos');
   });
 
+  it('entende o jeito brasileiro de escrever as carreiras', () => {
+    const l = (s: string) => translateLine(s)!;
+    expect(l('1ª carr.: 6 pb dentro do anel mágico')).toMatchObject({ label: 'Carreira 1', total: null, plain: 'Carreira 1: 6 pontos baixos dentro do anel mágico' });
+    expect(l('7ª a 10ª carr.: 30 pb').label).toBe('Carreiras 7 a 10');
+    expect(l('2ª e 3ª carr.: 12 pb').label).toBe('Carreiras 2 e 3');
+    expect(l('3ª carr.: *1 pb, 1 aum* = 9 pb')).toMatchObject({ total: 9, plain: 'Carreira 3: (1 ponto baixo, 1 aumento) repita por toda a carreira' });
+    expect(l('2ª carr.: 6 aum = 12 pb')).toMatchObject({ total: 12, plain: 'Carreira 2: 6 aumentos' });
+    expect(l('6ª carr.: Pelas alças de trás, fazer 12 pb').plain).toBe('Carreira 6: Só na alça de trás, fazer 12 pontos baixos');
+    expect(l('Nas alças livres nas 6ª e 28ª carr. fazer *1 pbx, 1 aum em mpa, 1 pbx*.').plain)
+      .toBe('Nas alças livres nas 6ª e 28ª carr. fazer (1 ponto baixíssimo, 1 aumento em meio ponto alto, 1 ponto baixíssimo) repita até o fim.');
+  });
+
+  it('separa títulos e quantidade de peças', () => {
+    expect(translateLine('Bolinhas amarelas (6)')).toMatchObject({ heading: true, total: null, plain: 'Bolinhas amarelas (6)' });
+    expect(translateLine('Parte de baixo da árvore')!.heading).toBe(true);
+    expect(translateLine('Com o fio Amigurumi 5089 (Selva)')!.heading).toBe(false);
+    expect(translateLine('Arrematar.')!.heading).toBe(false);
+    expect(translateLine('V2: 6 aum (12)')).toMatchObject({ heading: false, total: 12 });
+  });
+
   it('não reconhece termos no meio de palavras', () => {
     expect(translateLine('para')!.segs.some(s => s.term)).toBe(false);
   });

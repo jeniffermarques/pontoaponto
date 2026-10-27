@@ -461,3 +461,25 @@ button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation: none !important; transition: none !important; }
 }
+
+/* ---------- Gráfico em voltas (square) ---------- */
+.kinds .source { height: 56px; }
+.sq-card { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+.square { width: 100%; max-width: 420px; display: block; touch-action: manipulation; }
+.sq-round { cursor: pointer; opacity: .28; transition: opacity .15s; }
+.sq-round.on { opacity: 1; }
+.sq-hit { fill: transparent; }
+.sq-round.on .sq-hit { fill: var(--primary-soft); opacity: .55; }
+.sq-dc line { stroke: var(--primary); stroke-width: 1.2; stroke-linecap: round; }
+.sq-ch, .sq-ch ellipse { fill: none; stroke: var(--pink-ink); stroke-width: .9; }
+.sq-start { fill: var(--ink); }
+.sq-num { font: 700 7px var(--f-body); fill: var(--ink); }
+.sq-picker { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.chip-btn.on { background: var(--primary-soft); border-color: var(--primary); color: var(--primary-ink); }
+.sq-steps { margin: 0; padding-left: 22px; display: flex; flex-direction: column; gap: 8px; }
+.sq-steps li::marker { font-weight: 700; color: var(--blue-ink); }
+.sq-step { font-size: 15px; line-height: 1.55; font-weight: 600; }
+.is-desktop .sq-step { font-size: 16px; }
+.line-heading { margin: 10px 0 -2px; font-family: var(--f-title); font-size: 19px; font-weight: 600; color: var(--primary-ink); }
+.line-heading:first-child { margin-top: 0; }
+.is-desktop .line-heading { font-size: 21px; }
