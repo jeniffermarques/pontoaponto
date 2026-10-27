@@ -24,16 +24,16 @@ export interface Detail {
 }
 
 export const TERMS: TranslatableTerm[] = [
-  { keys: ['corrente', 'corr', 'chains', 'chain', 'ch'], pt: 'corrente', pl: 'correntes', ab: 'corr', en: 'ch', sym: '○', desc: 'Faça uma laçada e puxe pela alça que está na agulha. É a base de quase toda receita.' },
-  { keys: ['ponto baixíssimo', 'slip stitches', 'slip stitch', 'sl sts', 'sl st', 'slst', 'pbx'], pt: 'ponto baixíssimo', pl: 'pontos baixíssimos', ab: 'pbx', en: 'sl st', sym: '•', desc: 'Insira a agulha no ponto, faça uma laçada e puxe direto pelo ponto e pela alça da agulha. Usado para fechar voltas.' },
-  { keys: ['ponto baixo', 'single crochets', 'single crochet', 'sc', 'pb'], pt: 'ponto baixo', pl: 'pontos baixos', ab: 'pb', en: 'sc', sym: '×', desc: 'Insira a agulha no ponto e puxe uma laçada (ficam 2 alças). Faça outra laçada e passe pelas 2 alças.' },
-  { keys: ['meio ponto alto', 'half double crochets', 'half double crochet', 'hdc', 'mpa'], pt: 'meio ponto alto', pl: 'meios pontos altos', ab: 'mpa', en: 'hdc', sym: 'T', desc: 'Faça 1 laçada, insira no ponto e puxe (ficam 3 alças). Faça outra laçada e passe pelas 3 de uma vez.' },
-  { keys: ['ponto alto duplo', 'treble crochets', 'treble crochet', 'triple crochet', 'treble', 'tr', 'pad'], pt: 'ponto alto duplo', pl: 'pontos altos duplos', ab: 'pad', en: 'tr', sym: '‡', desc: 'Faça 2 laçadas, insira no ponto e puxe. Depois feche de 2 em 2 alças, três vezes.' },
-  { keys: ['ponto alto', 'double crochets', 'double crochet', 'dc', 'pa'], pt: 'ponto alto', pl: 'pontos altos', ab: 'pa', en: 'dc', sym: 'Ŧ', desc: 'Faça 1 laçada, insira no ponto e puxe (3 alças). Laçada e passe por 2. Laçada e passe pelas 2 últimas.' },
-  { keys: ['aumento', 'increases', 'increase', 'inc', 'aum'], pt: 'aumento', pl: 'aumentos', ab: 'aum', en: 'inc', sym: 'V', desc: 'Faça 2 pontos baixos no mesmo ponto. A peça ganha 1 ponto.' },
-  { keys: ['diminuição', 'invisible decreases', 'invisible decrease', 'invisible dec', 'inv dec', 'invdec', 'sc2tog', 'sc dec', 'decreases', 'decrease', 'dec', 'dim'], pt: 'diminuição', pl: 'diminuições', ab: 'dim', en: 'dec', sym: 'Λ', desc: 'Junte 2 pontos em 1: puxe uma laçada no 1º ponto, outra no 2º, e feche tudo junto. A peça perde 1 ponto.' },
-  { keys: ['anel mágico', 'magic ring', 'magic circle', 'magic loop', 'adjustable ring', 'mr', 'am'], pt: 'anel mágico', pl: 'anel mágico', ab: 'AM', en: 'MR', sym: '◎', desc: 'Um círculo de fio ajustável onde você faz os primeiros pontos. No final, puxe a ponta e ele fecha sem deixar furo.' },
-  { keys: ['laçada', 'yarn over hook', 'yarn over', 'yoh', 'yo'], pt: 'laçada', pl: 'laçadas', ab: 'laç', en: 'yo', sym: '', desc: 'Passe o fio por cima da agulha, de trás para a frente.' },
+  { keys: ['corrente', 'correntinhas', 'correntinha', 'corr.', 'corr', 'chains', 'chain', 'ch'], pt: 'corrente', pl: 'correntes', ab: 'corr', en: 'ch', sym: '○', desc: 'Faça uma laçada e puxe pela alça que está na agulha. É a base de quase toda receita.' },
+  { keys: ['ponto baixíssimo', 'p.b.x.', 'p.b.x', 'p.bx.', 'pbx.', 'slip stitches', 'slip stitch', 'sl sts', 'sl st', 'slst', 'pbx'], pt: 'ponto baixíssimo', pl: 'pontos baixíssimos', ab: 'pbx', en: 'sl st', sym: '•', desc: 'Insira a agulha no ponto, faça uma laçada e puxe direto pelo ponto e pela alça da agulha. Usado para fechar voltas.' },
+  { keys: ['ponto baixo', 'p.b.', 'pb.', 'single crochets', 'single crochet', 'sc', 'pb'], pt: 'ponto baixo', pl: 'pontos baixos', ab: 'pb', en: 'sc', sym: '×', desc: 'Insira a agulha no ponto e puxe uma laçada (ficam 2 alças). Faça outra laçada e passe pelas 2 alças.' },
+  { keys: ['meio ponto alto', 'mpa.', 'half double crochets', 'half double crochet', 'hdc', 'mpa'], pt: 'meio ponto alto', pl: 'meios pontos altos', ab: 'mpa', en: 'hdc', sym: 'T', desc: 'Faça 1 laçada, insira no ponto e puxe (ficam 3 alças). Faça outra laçada e passe pelas 3 de uma vez.' },
+  { keys: ['ponto alto duplo', 'pad.', 'treble crochets', 'treble crochet', 'triple crochet', 'treble', 'tr', 'pad'], pt: 'ponto alto duplo', pl: 'pontos altos duplos', ab: 'pad', en: 'tr', sym: '‡', desc: 'Faça 2 laçadas, insira no ponto e puxe. Depois feche de 2 em 2 alças, três vezes.' },
+  { keys: ['ponto alto', 'pa.', 'double crochets', 'double crochet', 'dc', 'pa'], pt: 'ponto alto', pl: 'pontos altos', ab: 'pa', en: 'dc', sym: 'Ŧ', desc: 'Faça 1 laçada, insira no ponto e puxe (3 alças). Laçada e passe por 2. Laçada e passe pelas 2 últimas.' },
+  { keys: ['aumento', 'aum.', 'increases', 'increase', 'inc', 'aum'], pt: 'aumento', pl: 'aumentos', ab: 'aum', en: 'inc', sym: 'V', desc: 'Faça 2 pontos baixos no mesmo ponto. A peça ganha 1 ponto.' },
+  { keys: ['diminuição', 'dim.', 'invisible decreases', 'invisible decrease', 'invisible dec', 'inv dec', 'invdec', 'sc2tog', 'sc dec', 'decreases', 'decrease', 'dec', 'dim'], pt: 'diminuição', pl: 'diminuições', ab: 'dim', en: 'dec', sym: 'Λ', desc: 'Junte 2 pontos em 1: puxe uma laçada no 1º ponto, outra no 2º, e feche tudo junto. A peça perde 1 ponto.' },
+  { keys: ['anel mágico', 'a.m.', 'am.', 'magic ring', 'magic circle', 'magic loop', 'adjustable ring', 'mr', 'am'], pt: 'anel mágico', pl: 'anel mágico', ab: 'AM', en: 'MR', sym: '◎', desc: 'Um círculo de fio ajustável onde você faz os primeiros pontos. No final, puxe a ponta e ele fecha sem deixar furo.' },
+  { keys: ['laçada', 'laç.', 'yarn over hook', 'yarn over', 'yoh', 'yo'], pt: 'laçada', pl: 'laçadas', ab: 'laç', en: 'yo', sym: '', desc: 'Passe o fio por cima da agulha, de trás para a frente.' },
   { keys: ['pelas alças de trás', 'pela alça de trás', 'in the back loop only', 'in back loop only', 'in back loops only', 'back loop only', 'back loops only', 'in the blo', 'in blo', 'blo only', 'blo'], pt: 'só na alça de trás', pl: 'só na alça de trás', ab: 'alça tr.', en: 'BLO', sym: '', desc: 'Em vez de pegar as 2 alças do ponto, pegue só a de trás. Cria uma linha marcada na peça.' },
   { keys: ['pelas alças da frente', 'pela alça da frente', 'in the front loop only', 'in front loop only', 'in front loops only', 'front loop only', 'front loops only', 'in the flo', 'in flo', 'flo only', 'flo'], pt: 'só na alça da frente', pl: 'só na alça da frente', ab: 'alça fr.', en: 'FLO', sym: '', desc: 'Pegue só a alça da frente do ponto, a que está mais perto de você.' },
 ];
@@ -118,6 +118,11 @@ export const PHRASES: [string | RegExp, string | ((m: RegExpExecArray) => string
   ['the head', 'a cabeça'], ['the body', 'o corpo'], ['head', 'cabeça'], ['body', 'corpo'], ['arms', 'braços'], ['arm', 'braço'], ['legs', 'pernas'], ['leg', 'perna'], ['ears', 'orelhas'], ['ear', 'orelha'],
   ['rs', 'lado direito'], ['ws', 'avesso'], ['rows', 'carreiras'], ['row', 'carreira'], ['rounds', 'voltas'], ['round', 'volta'], ['rnds', 'voltas'], ['rnd', 'volta'],
   ['stitches', 'pontos'], ['stitch', 'ponto'], ['sts', 'pontos'], ['st', 'ponto'], ['pts', 'pontos'], ['pt', 'ponto'],
+  // Abreviações brasileiras com ponto
+  ['todos os p.', 'todos os pontos'], ['os p.', 'os pontos'], ['p.', 'ponto'], ['pts.', 'pontos'], ['rep.', 'repita'],
+  ['trab.', 'trabalhe'], ['cont.', 'continue'], ['próx.', 'próximo'], ['prox.', 'próximo'], ['comp.', 'comprimento'], ['aprox.', 'aproximadamente'],
+  [/(\d+\s*[ªº](?:\s*,\s*\d+\s*[ªº])*\s+e\s+\d+\s*[ªº])\s*carr\./, r => r[1] + ' carreiras', 20],
+  ['as carr.', 'as carreiras'], ['carr.', 'carreira'],
   // Palavrinhas
   ['each', 'cada'], ['the next', 'o próximo'], ['next', 'próximo'], ['first', 'primeiro'], ['second', 'segundo'], ['last', 'último'], ['same', 'mesmo'],
   ['remaining', 'restantes'], ['only', 'só'], ['more', 'mais'], ['then', 'depois'], ['until', 'até'], ['between', 'entre'], ['not', 'não'], ['or', 'ou'],

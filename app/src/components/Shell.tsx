@@ -1,10 +1,11 @@
 import type { ReactNode } from 'react';
-import { NAV, PROJECT } from '../lib/data';
+import { NAV } from '../lib/data';
 import { useApp } from '../state';
+import { ProjectsPanel } from './ProjectsPanel';
 import { TermPopover, TermSheet } from './TermDetail';
 
 export function MobileShell({ children }: { children: ReactNode }) {
-  const { screen, setScreen, sel } = useApp();
+  const { screen, setScreen, sel, projectsOpen } = useApp();
   return (
     <div className="app is-mobile">
       <main className="m-scroll" key={screen}>{children}</main>
@@ -18,12 +19,13 @@ export function MobileShell({ children }: { children: ReactNode }) {
         ))}
       </nav>
       {sel && <TermSheet />}
+      {projectsOpen && <ProjectsPanel />}
     </div>
   );
 }
 
 export function DesktopShell({ children }: { children: ReactNode }) {
-  const { screen, setScreen, sel, row, rowTotal, projPct } = useApp();
+  const { screen, setScreen, sel, project, part, rowData, finished, projPct, projectsOpen, setProjectsOpen } = useApp();
   return (
     <div className="app is-desktop">
       <aside className="sidebar">
@@ -39,15 +41,19 @@ export function DesktopShell({ children }: { children: ReactNode }) {
             </button>
           ))}
         </nav>
-        <div className="side-proj">
-          <div className="side-proj-t">Projeto atual</div>
-          <div className="side-proj-n">{PROJECT.short}</div>
-          <div className="side-proj-r">Volta {row + 1} de {rowTotal}</div>
-          <div className="bar bar-6 bar-white"><div style={{ width: projPct + '%' }} /></div>
-        </div>
+        <button type="button" className="side-proj" onClick={() => setProjectsOpen(true)} aria-label="Projeto atual. Trocar projeto">
+          <span className="side-proj-t">Projeto atual</span>
+          {project && part && rowData ? <>
+            <span className="side-proj-n">{project.name}</span>
+            <span className="side-proj-r">{finished ? 'Concluído' : `${project.parts.length > 1 ? part.name + ' · ' : ''}${rowData.label} de ${part.rows.length}`}</span>
+            <span className="bar bar-6 bar-white"><span style={{ width: projPct + '%' }} /></span>
+          </> : <span className="side-proj-r">Nenhum projeto</span>}
+          <span className="side-proj-link">Trocar projeto ›</span>
+        </button>
       </aside>
       <main className="w-main" key={screen}><div className="w-inner">{children}</div></main>
       {sel && <TermPopover />}
+      {projectsOpen && <ProjectsPanel />}
     </div>
   );
 }

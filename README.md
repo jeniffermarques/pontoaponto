@@ -11,14 +11,21 @@ Funciona no celular e no computador, direto no navegador.
 **Início:** cole uma receita para traduzir na hora e continue o projeto de onde parou.
 
 **Contador ligado à receita**
+- **Seus projetos:** cole uma receita em Traduzir e toque em "Contar esta receita". O app separa as partes ("Árvore", "Vaso", "Bolinhas amarelas (6)"), as carreiras ("7ª a 10ª carr." vira 4 carreiras) e as peças repetidas ("Faça 8 squares iguais"). Dá para ter vários projetos e trocar entre eles em "Meus projetos" (o cartão "Projeto atual" abre essa lista).
+- Mostra as instruções no momento certo: "Antes de começar" (com o fio…) e "Depois desta carreira" (arrematar, costurar…). Ao terminar uma parte, avisa e passa para a próxima; no fim, mostra "Projeto concluído!".
 - Um botão grande soma +1 a cada ponto (no computador, a barra de espaço também conta).
 - Mostra o ponto de agora e o próximo, por exemplo "aumento: 2º ponto, no mesmo lugar", e em qual repetição você está.
 - Uma fileira de bolinhas, uma por ponto da volta, mostra o caminho: azul é ponto baixo, rosa é aumento e roxo é diminuição.
 - Avisa quando a volta está completa e passa para a próxima.
-- Guarda a volta e a contagem: se fechar o app, você volta exatamente de onde parou.
+- Guarda tudo no navegador: se fechar o app, você volta exatamente de onde parou, em cada projeto e em cada parte.
+- Quando a carreira não diz quantos pontos tem (texto corrido sem total), o contador conta livre.
 
 **Tradutor de receitas**
-- Entende receitas **em inglês** (`Rnd 1: 6 sc in magic ring (6)`) e **com abreviações em português** (`1ª carr.: *1 pb, 1 aum* = 9 pb`).
+- Entende receitas **em inglês** (`Rnd 1: 6 sc in magic ring (6)`) e **com abreviações em português**, nos formatos mais comuns de revistas e blogs:
+  - `1ª carr.: *1 pb, 1 aum* = 9 pb` (asteriscos = repetir por toda a carreira);
+  - abreviações com ponto: `6 p.b. no a.m.`, `Suba 3 corr. e trab. mais 9 pa.`;
+  - várias carreiras no mesmo parágrafo (`1ª carr.: … 2ª carr.: …`);
+  - `1ª carr.` sozinho numa linha, explicado em texto corrido nas linhas seguintes.
 - Traduz linha por linha enquanto você digita: separa a volta ou carreira, o total de pontos e as repetições, e transforma títulos como "Vaso" ou "Estrela (2)" em títulos.
 - As palavras de crochê ficam em rosa: toque nelas para ver como fazer o ponto.
 - **Lê foto e PDF** da receita, no próprio aparelho, sem enviar nada para a internet.
@@ -60,7 +67,8 @@ Feito com **React + TypeScript + Vite**. Não tem servidor: tudo roda no navegad
 | Parte | Onde fica | Como funciona |
 |---|---|---|
 | Tradutor | `app/src/lib/translate.ts` e `app/src/lib/data.ts` | Um dicionário de crochê (inglês e abreviações brasileiras). Procura primeiro as expressões mais longas e só reconhece palavras inteiras. Entende "Rnd 1", "1ª carr.", "7ª a 10ª carr.", totais como `(18)`, `= 9 pb` e `- 60 sts`, e repetições com `*...*`, `x6` e `repeat 6 times`. Só traduz palavras que não existem em português, para não estragar receitas brasileiras. |
-| Contador | `app/src/lib/translate.ts` (`parseSequence`) e `app/src/screens/Contador.tsx` | Transforma `V3: (1 pb, 1 aum) x6 (18)` na sequência de 18 pontos. |
+| Projetos | `app/src/lib/project.ts` e `app/src/components/ProjectsPanel.tsx` | Divide a receita em partes pelos títulos, expande faixas de carreiras, guarda as instruções antes e depois de cada carreira e onde você parou em cada parte. |
+| Contador | `app/src/lib/sequence.ts` e `app/src/screens/Contador.tsx` | Transforma `3ª carr.: *1 pb, 1 aum* = 9 pb` na sequência de 9 pontos (repetindo o que está entre asteriscos até o total). A corrente de subida do começo não conta como ponto. |
 | Foto e PDF | `app/src/lib/ocr.ts` | Fotos passam pelo [tesseract.js](https://github.com/naptha/tesseract.js) (OCR em português e inglês). PDFs com texto são lidos direto pelo [pdf.js](https://github.com/mozilla/pdf.js); PDFs escaneados têm cada página lida por OCR. Os arquivos do OCR vêm do npm e são copiados para `app/public/ocr/` antes de `dev` e `build`, então o app não depende de nenhum CDN. A primeira leitura baixa cerca de 8 MB. |
 | Gráfico em voltas | `app/src/lib/square.ts` e `app/src/components/SquareDiagram.tsx` | O square é descrito como dados (o que vai em cada canto e em cada lado). A partir disso o app desenha o gráfico, escreve o passo a passo e conta os pontos. |
 | Telas | `app/src/screens/` | Início, Contador, Traduzir, Gráfico e Glossário. Até 768px de largura usa o layout de celular (abas embaixo); acima disso, o de computador (barra lateral). |
@@ -70,7 +78,10 @@ Feito com **React + TypeScript + Vite**. Não tem servidor: tudo roda no navegad
 - **O tradutor é um dicionário, não um tradutor completo.** As linhas da receita saem bem, mas textos explicativos longos em inglês ficam em parte em inglês.
 - **O OCR lê texto impresso**, não letra à mão. Fotos tortas, borradas ou com sombra pioram a leitura, por isso o app pede para conferir o texto.
 - **Ler gráficos por foto ainda não funciona.** O botão explica isso. O próximo passo seria usar IA com visão (o Claude), que precisa de um servidor e de uma chave de API com custo por leitura. A IA devolveria os mesmos dados que `app/src/lib/square.ts` já usa.
-- **Uma receita só no contador** (o ursinho de exemplo). O próximo passo é poder mandar qualquer receita traduzida ou qualquer gráfico para o contador.
+- **Carreiras em texto corrido** (como "Suba 3 corr. no 1º p. … Rep. por toda a volta") só têm total quando a receita diz ("Total de 10 pa."); sem isso, o contador conta livre.
+- **Gráficos ainda não vão para o contador**: só receitas escritas.
+
+Os testes usam receitas reais como exemplo, em `app/src/lib/fixtures/` (miniárvore, almofada e cachecol de squares).
 
 ## Origem do design
 

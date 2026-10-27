@@ -1,36 +1,64 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
-import { CHART, PROJECT, SAMPLE_EN, SAMPLE_PT, type ScreenId, type SourceId } from './lib/data';
+import { CHART, SAMPLE_EN, SAMPLE_PT, type ScreenId, type SourceId } from './lib/data';
 import { isPdf, OcrError, readImage, readPdf } from './lib/ocr';
+import { EXAMPLE, buildParts, emptyProgress, isFirst, isLast, newId, projectPct, step, type Progress, type Project } from './lib/project';
+import { bodySequence, stitchSequence } from './lib/sequence';
 import { SQUARE } from './lib/square';
+import { translateLine, translateText } from './lib/translate';
 
 export type ChartKind = 'square' | 'reto';
-import { parseSequence, translateLine, translateText } from './lib/translate';
 
 export interface Notice {
   text: string;
   error?: boolean;
 }
 
-const STORAGE_KEY = 'pontoaponto:v1';
+const STORAGE_KEY = 'pontoaponto:v2';
+/** Versão antiga: só a volta e a contagem do ursinho de exemplo. */
+const OLD_KEY = 'pontoaponto:v1';
 
 interface Saved {
-  row: number;
-  count: number;
+  projects: Project[];
+  current: string | null;
+  progress: Record<string, Progress>;
   help: boolean;
 }
 
+/** Garante que o progresso salvo cabe no projeto (partes, peças e carreiras existentes). */
+function fixProgress(p: Project, prog: Progress | undefined): Progress {
+  const base = emptyProgress(p);
+  if (!prog || !Array.isArray(prog.spots)) return base;
+  const int = (v: unknown, max: number) => (Number.isInteger(v) ? Math.min(Math.max(0, v as number), max) : 0);
+  return {
+    finished: prog.finished === true,
+    part: int(prog.part, p.parts.length - 1),
+    spots: p.parts.map((part, i) => {
+      const s = prog.spots[i];
+      if (!s) return base.spots[i];
+      return { copy: int(s.copy, part.copies - 1), row: int(s.row, part.rows.length - 1), count: int(s.count, 9999) };
+    }),
+  };
+}
+
 function loadSaved(): Saved {
-  const fallback = { row: 0, count: 0, help: true };
+  const fresh: Saved = { projects: [EXAMPLE], current: EXAMPLE.id, progress: { [EXAMPLE.id]: emptyProgress(EXAMPLE) }, help: true };
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return fallback;
-    const s = JSON.parse(raw) as Partial<Saved>;
-    const row = Number.isInteger(s.row) ? Math.min(Math.max(0, s.row!), PROJECT.rows.length - 1) : 0;
-    const count = Number.isInteger(s.count) ? Math.max(0, s.count!) : 0;
-    return { row, count, help: s.help !== false };
-  } catch {
-    return fallback;
-  }
+    if (raw) {
+      const s = JSON.parse(raw) as Saved;
+      const projects = (Array.isArray(s.projects) ? s.projects : []).filter(p => p && p.id && Array.isArray(p.parts) && p.parts.length);
+      const progress = Object.fromEntries(projects.map(p => [p.id, fixProgress(p, s.progress?.[p.id])]));
+      const current = projects.some(p => p.id === s.current) ? s.current : projects[0]?.id ?? null;
+      return { projects, current, progress, help: s.help !== false };
+    }
+    const old = localStorage.getItem(OLD_KEY);
+    if (old) {
+      const o = JSON.parse(old) as { row?: number; count?: number; help?: boolean };
+      const prog = fixProgress(EXAMPLE, { part: 0, spots: [{ copy: 0, row: o.row ?? 0, count: o.count ?? 0 }] });
+      return { ...fresh, progress: { [EXAMPLE.id]: prog }, help: o.help !== false };
+    }
+  } catch { /* armazenamento indisponível ou corrompido: começa do zero */ }
+  return fresh;
 }
 
 const DESKTOP_QUERY = '(min-width: 769px)';
@@ -46,12 +74,13 @@ export function useIsDesktop() {
   return desktop;
 }
 
-const RECIPE = PROJECT.rows.map(r => translateLine(r)!);
-
 function useAppState() {
   const desktop = useIsDesktop();
   const [saved, setSaved] = useState(loadSaved);
-  const { row, count, help } = saved;
+  const { projects, help } = saved;
+  const [projectsOpen, setProjectsOpen] = useState(false);
+  /** Aviso ao passar de parte ou de peça: "Você terminou a Árvore. Agora: Vaso." */
+  const [flash, setFlash] = useState('');
   const [screen, setScreen] = useState<ScreenId>('inicio');
   /** Termo aberto na folha (celular) ou no cartão flutuante (computador). */
   const [sel, setSel] = useState<string | null>(null);
@@ -73,28 +102,70 @@ function useAppState() {
     try { localStorage.setItem(STORAGE_KEY, JSON.stringify(saved)); } catch { /* armazenamento indisponível */ }
   }, [saved]);
 
-  const rowTotal = RECIPE.length;
-  const cur = RECIPE[row];
-  const meta = cur.total ?? 0;
-  const done = count >= meta;
-  const seq = useMemo(() => parseSequence(PROJECT.rows[row]), [row]);
+  // ---------- Contador: projeto, parte e carreira atuais ----------
+  const project = projects.find(p => p.id === saved.current) ?? null;
+  const prog = project ? fixProgress(project, saved.progress[project.id]) : null;
+  const part = project && prog ? project.parts[prog.part] : null;
+  const spot = prog ? prog.spots[prog.part] : { copy: 0, row: 0, count: 0 };
+  const rowData = part ? part.rows[spot.row] : null;
+  const count = spot.count;
+  const cur = useMemo(() => rowData ? translateLine(rowData.raw)! : null, [rowData]);
+  const seq = useMemo(() => !rowData ? null : rowData.body ? bodySequence(rowData.body) : stitchSequence(rowData.raw), [rowData]);
+  const meta = seq ? seq.st.length : cur?.total ?? null;
+  const done = meta !== null && count >= meta;
+  const partRows = useMemo(() => part ? part.rows.map(r => ({ ...r, line: translateLine(r.raw)! })) : [], [part]);
 
-  const update = (patch: Partial<Saved> | ((s: Saved) => Partial<Saved>)) =>
-    setSaved(s => ({ ...s, ...(typeof patch === 'function' ? patch(s) : patch) }));
+  const setProg = useCallback((fn: (p: Progress, project: Project) => Progress) => setSaved(s => {
+    const pr = s.projects.find(p => p.id === s.current);
+    if (!pr) return s;
+    return { ...s, progress: { ...s.progress, [pr.id]: fn(fixProgress(pr, s.progress[pr.id]), pr) } };
+  }), []);
+  const setSpot = useCallback((fn: (s: Progress['spots'][number]) => Partial<Progress['spots'][number]>) =>
+    setProg(p => ({ ...p, spots: p.spots.map((s, i) => i === p.part ? { ...s, ...fn(s) } : s) })), [setProg]);
 
   const plus = useCallback(() => {
     try { navigator.vibrate?.(15); } catch { /* sem vibração */ }
-    setSaved(s => ({ ...s, count: s.count + 1 }));
-  }, []);
-  const minus = () => update(s => ({ count: Math.max(0, s.count - 1) }));
-  const reset = () => update({ count: 0 });
-  const nextRow = useCallback(() => setSaved(s => ({ ...s, row: Math.min(rowTotal - 1, s.row + 1), count: 0 })), [rowTotal]);
-  const prevRow = () => update(s => ({ row: Math.max(0, s.row - 1), count: 0 }));
-  const pickRow = (i: number) => update({ row: i, count: 0 });
+    setFlash('');
+    setSpot(s => ({ count: s.count + 1 }));
+  }, [setSpot]);
+  const minus = () => { setFlash(''); setSpot(s => ({ count: Math.max(0, s.count - 1) })); };
+  const reset = () => setSpot(() => ({ count: 0 }));
+  const nextRow = () => {
+    if (!project || !prog || !part) return;
+    const n = step(project, prog, 1);
+    setProg(() => n);
+    if (n.finished) setFlash('');
+    else if (n.part !== prog.part) setFlash(`Você terminou: ${part.name}. Agora: ${project.parts[n.part].name}.`);
+    else if (n.spots[n.part].copy !== spot.copy) setFlash(`Peça ${spot.copy + 1} de ${part.copies} pronta. Agora a peça ${spot.copy + 2}.`);
+    else setFlash('');
+  };
+  const prevRow = () => { setFlash(''); setProg((p, pr) => step(pr, p, -1)); };
+  const pickRow = (i: number) => { setFlash(''); setProg(p => ({ ...p, finished: false, spots: p.spots.map((s, k) => k === p.part ? { ...s, row: i, count: 0 } : s) })); };
+  const pickPart = (i: number) => { setFlash(''); setProg(p => ({ ...p, part: i, finished: false })); };
+  const restart = () => { setFlash(''); setProg((_, pr) => emptyProgress(pr)); };
+  const pickProject = (id: string) => { setFlash(''); setSaved(s => ({ ...s, current: id })); setProjectsOpen(false); setScreen('contador'); };
+  /** Cria um projeto a partir do texto da receita. Devolve false se não achou nenhuma carreira. */
+  const createProject = (name: string, text: string) => {
+    const title = name.trim() || 'Minha receita';
+    const parts = buildParts(text, title);
+    if (!parts.length) return false;
+    const p: Project = { id: newId(), name: title, parts };
+    setSaved(s => ({ ...s, projects: [p, ...s.projects], current: p.id, progress: { ...s.progress, [p.id]: emptyProgress(p) } }));
+    setScreen('contador');
+    return true;
+  };
+  const deleteProject = (id: string) => setSaved(s => {
+    const projects = s.projects.filter(p => p.id !== id);
+    const progress = { ...s.progress };
+    delete progress[id];
+    return { ...s, projects, progress, current: s.current === id ? projects[0]?.id ?? null : s.current };
+  });
+  const addExample = () => setSaved(s => s.projects.some(p => p.id === EXAMPLE.id) ? { ...s, current: EXAMPLE.id }
+    : { ...s, projects: [...s.projects, EXAMPLE], current: EXAMPLE.id, progress: { ...s.progress, [EXAMPLE.id]: emptyProgress(EXAMPLE) } });
 
   // No computador, a barra de espaço conta como um toque no círculo.
   useEffect(() => {
-    if (!desktop || screen !== 'contador') return;
+    if (!desktop || screen !== 'contador' || !project || prog?.finished) return;
     const onKey = (e: KeyboardEvent) => {
       if (e.code !== 'Space' || e.repeat) return;
       const tag = (document.activeElement as HTMLElement | null)?.tagName || '';
@@ -104,7 +175,7 @@ function useAppState() {
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [desktop, screen, done, nextRow, plus]);
+  });
 
 
   const readFile = async (file: File) => {
@@ -151,11 +222,16 @@ function useAppState() {
     openInGlossary: () => { if (sel) setGlossSel(sel); setSel(null); setQ(''); setScreen('glossario'); },
     glossSel, setGlossSel, q, setQ,
     // Contador
-    recipe: RECIPE, row, rowTotal, cur, meta, count, done, seq,
+    projects, project, part, partIndex: prog?.part ?? 0, spot, rowData, partRows, cur, meta, count, done, seq,
+    progressOf: (p: Project) => fixProgress(p, saved.progress[p.id]),
+    pctOf: (p: Project) => projectPct(p, fixProgress(p, saved.progress[p.id]), p.id === project?.id ? meta : null),
     pct: meta ? Math.min(100, Math.round((count / meta) * 100)) : 0,
-    projPct: Math.round(((row + Math.min(1, meta ? count / meta : 0)) / rowTotal) * 100),
-    plus, minus, reset, nextRow, prevRow, pickRow,
-    help, setHelp: (h: boolean) => update({ help: h }),
+    projPct: project && prog ? projectPct(project, prog, meta) : 0,
+    atStart: prog ? isFirst(prog) : true, atEnd: project && prog ? isLast(project, prog) : true,
+    finished: !!prog?.finished, flash,
+    plus, minus, reset, nextRow, prevRow, pickRow, pickPart, restart, pickProject, createProject, deleteProject, addExample,
+    projectsOpen, setProjectsOpen,
+    help, setHelp: (h: boolean) => setSaved(s => ({ ...s, help: h })),
     // Tradutor
     input, setInput, lines: useMemo(() => translateText(input), [input]),
     loadEN: () => setInput(SAMPLE_EN), loadPT: () => setInput(SAMPLE_PT), clear: () => setInput(''),

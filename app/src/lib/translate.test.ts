@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { PROJECT, SAMPLE_EN, SAMPLE_PT } from './data';
-import { parseSequence, translateLine, translateText } from './translate';
+import { SAMPLE_EN, SAMPLE_PT } from './data';
+import { translateLine, translateText } from './translate';
 
 const plain = (s: string) => translateLine(s)!.plain;
 
@@ -74,7 +74,7 @@ describe('translateLine', () => {
     expect(l('2ª carr.: 6 aum = 12 pb')).toMatchObject({ total: 12, plain: 'Carreira 2: 6 aumentos' });
     expect(l('6ª carr.: Pelas alças de trás, fazer 12 pb').plain).toBe('Carreira 6: Só na alça de trás, fazer 12 pontos baixos');
     expect(l('Nas alças livres nas 6ª e 28ª carr. fazer *1 pbx, 1 aum em mpa, 1 pbx*.').plain)
-      .toBe('Nas alças livres nas 6ª e 28ª carr. fazer (1 ponto baixíssimo, 1 aumento em meio ponto alto, 1 ponto baixíssimo) repita até o fim.');
+      .toBe('Nas alças livres nas 6ª e 28ª carreiras fazer (1 ponto baixíssimo, 1 aumento em meio ponto alto, 1 ponto baixíssimo) repita até o fim.');
   });
 
   it('separa títulos e quantidade de peças', () => {
@@ -96,22 +96,5 @@ describe('translateLine', () => {
   it('ignora linhas vazias', () => {
     expect(translateLine('   ')).toBeNull();
     expect(plain('6 sc')).toBe('6 pontos baixos');
-  });
-});
-
-describe('parseSequence', () => {
-  it('expande repetições e aumentos', () => {
-    const { st, times } = parseSequence(PROJECT.rows[2]);
-    expect(times).toBe(6);
-    expect(st).toHaveLength(18);
-    expect(st.slice(0, 3).map(s => s.part)).toEqual(['no próximo ponto', '1º ponto do aumento', '2º ponto, no mesmo lugar']);
-  });
-
-  it('a sequência de cada volta bate com o total', () => {
-    for (const row of PROJECT.rows) expect(parseSequence(row).st).toHaveLength(translateLine(row)!.total!);
-  });
-
-  it('usa o anel mágico na primeira volta', () => {
-    expect(parseSequence(PROJECT.rows[0]).st[0].part).toBe('dentro do anel mágico');
   });
 });

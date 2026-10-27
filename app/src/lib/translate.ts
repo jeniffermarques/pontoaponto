@@ -41,7 +41,7 @@ const LABEL_RE = new RegExp(`^${NOUN}\\.?\\s*(\\d+)${RANGE}(?:[a-z]+\\.?\\s*)?(\
 const ORD = '\\s*[ªº°]?';
 const LABEL_PT_RE = new RegExp(`^(\\d+)${ORD}${RANGE}(\\d+)${ORD})?\\s*${NOUN}\\.?\\s*[:.)-]?\\s*`, 'i');
 
-function parseLabel(s: string) {
+export function parseLabel(s: string) {
   let noun: string, a: string, sep: string | undefined, b: string | undefined;
   let m = s.match(LABEL_RE);
   if (m) [, noun, a, sep, b] = m;
@@ -53,7 +53,7 @@ function parseLabel(s: string) {
 }
 
 /** Linha que só dá nome a uma parte da receita, como "Vaso" ou "Estrela (2)". */
-const isHeading = (s: string) => s.length <= 40 && !/[.:;,!?]$/.test(s) && !/^\d/.test(s) && !/^(com|with|usando|using|use)\b/i.test(s);
+const isHeading = (s: string) => s.length <= 40 && !/[.:;,!?]$/.test(s) && !s.includes(':') && !/^\d/.test(s) && !/^(com|with|usando|using|use)\b/i.test(s);
 
 // Asteriscos sem dizer quantas vezes: repetir até o fim da volta/carreira.
 const REPEAT_HINT = /^\s*(?:[x×]\s*\d|\d+\s*[x×]|rep\b|repeat|repita|repetir|around|across|\d+\s*(?:more\s+)?(?:times|vezes))/i;
@@ -63,7 +63,7 @@ const STITCH = /\b(pb|pa|mpa|pbx|pad|corr|aum|dim|am|sc|dc|hdc|tr|ch|inc|dec|sl\
 const ABBR_END = /\b(carr|corr|pts?|aum|dim|rnds?|sts?|ch|sc|dc|hdc|tr|nº|ex|aprox)\.\s*$/i;
 // Total no fim da linha: "(18)", "(18 sts)", "[18 sc]", "(18 sts total)", "- 18 sts", "= 18".
 const UNIT = '(?:sts?|stitches|pts?|pontos|sc|dc|hdc|tr|ch|pb|pa|mpa|corr)';
-const TOTAL_RE = new RegExp(`(?:[([]\\s*(\\d+)\\s*(?:${UNIT}\\.?)?(?:\\s*total)?\\s*[)\\]]|[-–—]\\s*(\\d+)\\s*${UNIT}|=\\s*(\\d+)\\s*${UNIT}?)\\s*\\.?\\s*$`, 'i');
+export const TOTAL_RE = new RegExp(`(?:[([]\\s*(\\d+)\\s*(?:${UNIT}\\.?)?(?:\\s*total)?\\s*[)\\]]|[-–—]\\s*(\\d+)\\s*${UNIT}|=\\s*(\\d+)\\s*${UNIT}?)\\s*\\.?\\s*$`, 'i');
 
 /** Coloca o número antes da corrente ("ch 21" vira "21 ch") para virar "21 correntes". */
 const prepare = (s: string) => s
@@ -122,6 +122,8 @@ export function translateLine(raw: string): Line | null {
         buf += typeof m.out === 'function' ? m.out(r) : m.out;
       }
       i += r[0].length;
+      // "pbx." no fim da frase: o ponto da abreviação também fecha a frase.
+      if (r[0].endsWith('.') && /^\s*(?:$|[A-ZÀ-Ú])/.test(s.slice(i))) buf += '.';
     } else {
       buf += s[i];
       i++;
@@ -144,36 +146,25 @@ export function translateLine(raw: string): Line | null {
   return { raw, label, total, heading, segs, plain: (label ? label + ': ' : '') + segs.map(g => g.text).join('') };
 }
 
+const ROW_START = '(?:\\d+\\s*[ªº°]\\s*(?:a\\s+\\d+\\s*[ªº°]\\s*)?(?:carr|carreira|volta|v)\\b\\.?\\s*:|(?:rnd|round|row)s?\\s*\\d+[^:]{0,8}:)';
+
+/**
+ * Separa carreiras escritas no mesmo parágrafo ("1ª carr.: … 2ª carr.: …") em linhas próprias.
+ * "Frente e costas: com o fio … 1ª carr.: …" vira o título "Frente e costas" e o resto.
+ * Depois do total de uma carreira ("(24).") o texto que sobra vai para outra linha.
+ */
+export function splitRecipe(text: string): string[] {
+  const out: string[] = [];
+  for (const line of text.split('\n')) {
+    let rest = line.trim();
+    const titled = rest.match(new RegExp(`^([^:.\\d]{3,40}):\\s+(.*${ROW_START}.*)$`, 'i'));
+    if (titled) { out.push(titled[1].trim()); rest = titled[2]; }
+    rest.split(new RegExp(`(?<=[.!?)])\\s+(?=${ROW_START})`, 'i'))
+      .flatMap(piece => piece.split(/(?<=\(\d+\)\.?)\s+(?=[A-ZÀ-Ú])/))
+      .forEach(piece => out.push(piece));
+  }
+  return out;
+}
+
 export const translateText = (text: string) =>
-  text.split('\n').map(translateLine).filter((l): l is Line => l !== null);
-
-export interface Stitch {
-  /** Abreviação do ponto: pb, aum, dim. */
-  a: string;
-  /** Índice da repetição (0, 1, …). */
-  rep: number;
-  part: string;
-}
-
-/** Monta a sequência de pontos de uma volta, ex. "V3: (1 pb, 1 aum) x6 (18)". */
-export function parseSequence(raw: string): { st: Stitch[]; times: number } {
-  const s = raw.replace(/^V\d+:\s*/, '').replace(/\(\d+\)\s*$/, '').trim();
-  const g = s.match(/^\((.+)\)\s*x(\d+)/);
-  const times = g ? +g[2] : 1;
-  const unit: string[] = [];
-  (g ? g[1] : s).split(',').forEach(p => {
-    const m = p.trim().match(/^(\d+)\s+(\w+)/);
-    if (m) for (let k = 0; k < +m[1]; k++) unit.push(m[2].toLowerCase());
-  });
-  const am = /\bAM\b/.test(s);
-  const st: Stitch[] = [];
-  for (let r = 0; r < times; r++) unit.forEach(a => {
-    if (a === 'aum') {
-      st.push({ a, rep: r, part: '1º ponto do aumento' });
-      st.push({ a, rep: r, part: '2º ponto, no mesmo lugar' });
-    } else {
-      st.push({ a, rep: r, part: a === 'dim' ? 'junte 2 pontos em 1' : am ? 'dentro do anel mágico' : 'no próximo ponto' });
-    }
-  });
-  return { st, times };
-}
+  splitRecipe(text).map(translateLine).filter((l): l is Line => l !== null);

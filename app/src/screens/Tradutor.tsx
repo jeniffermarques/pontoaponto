@@ -60,6 +60,30 @@ function Examples() {
   );
 }
 
+const SECTION_RE = /pontos utilizados|abreviaturas|execução|medidas|materia(l|is)|montagem|acabamento|observaç|legenda|amostra|instruções|dicas?\b/i;
+
+/** "Contar esta receita": vira um projeto no contador, separado em partes e carreiras. */
+function CountThis() {
+  const a = useApp();
+  const [name, setName] = useState('');
+  const [error, setError] = useState('');
+  if (!a.lines.some(l => l.label)) return null;
+  // Títulos de seção ("Execução", "Montagem") não servem de nome para o projeto.
+  const firstTitle = a.lines.find(l => l.heading && !SECTION_RE.test(l.raw))?.raw.trim().replace(/\s*\(\d+\)$/, '') ?? '';
+  const go = () => { if (!a.createProject(name || firstTitle, a.input)) setError('Não achamos carreiras nesta receita para contar.'); };
+  return (
+    <form className="count-this" onSubmit={e => { e.preventDefault(); go(); }}>
+      <div className="count-this-t">Vai fazer esta receita?</div>
+      <div className="small muted">O contador acompanha cada carreira, parte por parte.</div>
+      <div className="row gap-8 wrap">
+        <input className="search grow" value={name} onChange={e => setName(e.target.value)} placeholder={firstTitle || 'Nome do projeto (ex: Almofada)'} aria-label="Nome do projeto" />
+        <button type="submit" className="btn btn-primary btn-44 px-18">Contar esta receita</button>
+      </div>
+      {error && <div className="notice error" role="alert">{error}</div>}
+    </form>
+  );
+}
+
 const Notice = ({ notice }: { notice: NoticeData | null }) => notice
   ? <div className={'notice' + (notice.error ? ' error' : '')} role={notice.error ? 'alert' : 'status'}>{notice.text}</div>
   : null;
@@ -93,6 +117,7 @@ export function Tradutor() {
       <Examples />
       {editor}
       {heading}
+      <CountThis />
       {a.lines.length === 0 && <div className="empty">Cole uma receita acima ou toque em um exemplo.</div>}
       {a.lines.map((l, i) => l.heading ? <h2 key={i} className="line-heading">{l.raw.trim()}</h2> : (
         <div key={i} className="card line">
@@ -120,6 +145,7 @@ export function Tradutor() {
         </div>
         <div className="col gap-12">
           {heading}
+          <CountThis />
           {a.lines.length === 0 && <div className="empty">Cole uma receita ao lado ou escolha um exemplo.</div>}
           {a.lines.map((l, i) => l.heading ? <h2 key={i} className="line-heading">{l.raw.trim()}</h2> : (
             <div key={i} className="card line">

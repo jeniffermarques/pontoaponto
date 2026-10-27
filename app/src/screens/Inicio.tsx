@@ -1,5 +1,4 @@
 import type { ScreenId } from '../lib/data';
-import { PROJECT } from '../lib/data';
 import { useApp } from '../state';
 
 const SHORTCUTS: { id: ScreenId; tone: string; g: string; gClass: string; title: string; m: string; w: string }[] = [
@@ -16,15 +15,31 @@ export function Inicio() {
     <textarea className="draft" value={a.draft} onChange={e => a.setDraft(e.target.value)}
       placeholder="ex: Rnd 1: 6 sc in magic ring (6)" aria-label="Receita para traduzir" />
   );
-  const project = (
+  const project = a.project && a.part && a.rowData ? (
     <div className="proj">
       <div className="proj-eyebrow">Projeto atual</div>
-      <div className="proj-name">{PROJECT.name}</div>
-      <div className="proj-sub">Volta {a.row + 1} de {a.rowTotal} · {a.count} de {a.meta} pontos{desktop ? ' nesta volta' : ''}</div>
+      <div className="proj-name">{a.project.name}</div>
+      <div className="proj-sub">
+        {a.finished ? 'Concluído!' : <>
+          {a.project.parts.length > 1 && <>{a.part.name} · </>}
+          {a.rowData.label} de {a.part.rows.length}{a.meta !== null && <> · {a.count} de {a.meta} pontos</>}
+        </>}
+      </div>
       <div className="bar bar-proj"><div style={{ width: a.projPct + '%' }} /></div>
-      <button type="button" className="btn btn-white" onClick={() => a.setScreen('contador')}>Continuar contando</button>
+      <div className="row gap-10 wrap">
+        <button type="button" className="btn btn-white" onClick={() => a.setScreen('contador')}>Continuar contando</button>
+        <button type="button" className="btn btn-ghost-white" onClick={() => a.setProjectsOpen(true)}>Trocar projeto</button>
+      </div>
+    </div>
+  ) : (
+    <div className="proj">
+      <div className="proj-eyebrow">Projeto atual</div>
+      <div className="proj-name">Nenhum projeto ainda</div>
+      <div className="proj-sub">Traduza uma receita e toque em “Contar esta receita”.</div>
+      <button type="button" className="btn btn-white" onClick={() => a.setScreen('tradutor')}>Traduzir uma receita</button>
     </div>
   );
+
   const shortcuts = SHORTCUTS.filter(s => !desktop || s.w).map(s => (
     <button key={s.id} type="button" className={'shortcut ' + s.tone} onClick={() => a.setScreen(s.id)}>
       <span className={'shortcut-g ' + s.gClass}>{s.g}</span>
