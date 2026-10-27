@@ -55,10 +55,10 @@ describe('buildParts', () => {
 
   it('separa faixas de carreiras e guarda as instruções no lugar certo', () => {
     const vaso = parts[1];
-    expect(vaso.rows.map(r => r.label)).toEqual(['Carreira 1', 'Carreira 2', 'Carreira 7', 'Carreira 8', 'Carreira 9', 'Carreira 10']);
-    expect(vaso.intro).toEqual(['Com o fio Amigurumi 3611 (Rubi)']);
-    expect(vaso.rows[5].after).toEqual(['Dobrar e costurar nas alças da frente que ficaram livres na 11ª carr.']);
-    expect(parts[0].rows[4].after).toEqual(['Arrematar.', 'Nas alças que ficaram livres nas 6ª e 10ª carr. fazer *1 pbx, 1 aum em mpa, 1 pbx*.', 'Arrematar.']);
+    expect(vaso.rows.map(r => r.label)).toEqual(['Carreira 1', 'Carreira 2', 'Carreira 3', 'Carreira 4', 'Carreira 5', 'Carreira 6']);
+    expect(vaso.intro).toEqual(['Com o fio vermelho']);
+    expect(vaso.rows[5].after).toEqual(['Dobrar a borda para fora e costurar.']);
+    expect(parts[0].rows[4].after).toEqual(['Arrematar.', 'Nas alças livres da 5ª carr. fazer *1 pbx, 1 aum em mpa, 1 pbx*.', 'Arrematar.']);
   });
 
   it('receita sem títulos vira uma parte só', () => {
@@ -96,8 +96,8 @@ describe('receita da almofada (carreiras num parágrafo só)', () => {
     expect(parts.map(p => [p.name, p.copies, p.rows.map(r => r.label)])).toEqual([
       ['Frente e costas', 2, ['Carreira 1', 'Carreira 2', 'Carreira 3', 'Carreira 4']],
     ]);
-    expect(parts[0].intro).toEqual(['com o fio Puffy na cor Folhagem, fazer um a.m. e trab. seguindo o gráfico 1. Fechar todas as carr. com 1 pbx.']);
-    expect(parts[0].rows[3].after[0]).toMatch(/^Cont\. seguindo o gráfico 1/);
+    expect(parts[0].intro).toEqual(['com o fio verde, fazer um a.m. Fechar todas as carr. com 1 pbx.']);
+    expect(parts[0].rows[3].after[0]).toMatch(/^Cont\. aumentando 6 p\. por carr\./);
   });
 
   it('conta os pontos de cada carreira sem contar a corrente de subida', () => {
@@ -112,8 +112,8 @@ describe('receita da almofada (carreiras num parágrafo só)', () => {
     expect(lines.map(l => l.plain)).toEqual([
       'Carreira 1: 1 corrente, 6 pontos baixos no anel mágico.',
       'Carreira 2: 1 corrente, 6 aumentos.',
-      'Carreira 3: Trocar para a cor Grão-de-Bico e fazer: 1 corrente, (1 ponto baixo, 1 aumento) repita por toda a carreira',
-      'Carreira 4: Trocar para a cor Branco e fazer: 1 corrente (2 pontos baixos, 1 aumento) repita por toda a carreira',
+      'Carreira 3: Trocar para a cor bege e fazer: 1 corrente, (1 ponto baixo, 1 aumento) repita por toda a carreira',
+      'Carreira 4: Trocar para a cor branca e fazer: 1 corrente (2 pontos baixos, 1 aumento) repita por toda a carreira',
     ]);
   });
 });
@@ -121,33 +121,37 @@ describe('receita da almofada (carreiras num parágrafo só)', () => {
 describe('receita do cachecol (carreira explicada em várias linhas)', () => {
   const parts = buildParts(CACHECOL, 'Cachecol');
 
-  it('acha o square, as 8 peças e as 6 carreiras', () => {
-    expect(parts.map(p => [p.name, p.copies, p.rows.length])).toEqual([['Square', 8, 6]]);
+  it('acha o square, as 6 peças e as 4 carreiras', () => {
+    expect(parts.map(p => [p.name, p.copies, p.rows.length])).toEqual([['Square', 6, 4]]);
   });
 
   it('guarda as linhas de cada carreira e a montagem no fim', () => {
     const [r1, , r3] = parts[0].rows;
     expect(r1.body).toEqual([
-      'Com o fio Amigurumi Chenille cor 7069, faça um AM.',
-      'Suba 3 corr. (equivalem ao primeiro pa.) e trab. mais 9 pa. dentro do anel.',
-      'Total de 10 pa..',
+      'Com o fio azul, faça um AM.',
+      'Suba 3 corr. (valem como o primeiro pa.) e trab. mais 11 pa. dentro do anel.',
+      'Total de 12 pa..',
       'Feche a carr. com 1 p.bx.',
     ]);
-    expect(r3.body!.at(-1)).toBe('A flor estará formada.');
-    const last = parts[0].rows[5];
-    expect(last.body).toEqual(['Suba 1 corr. e no mesmo p. faça 1 mpa.', 'Siga subindo 1 mpa em cada p. da carr. anterior.']);
-    expect(last.after.slice(0, 2)).toEqual(['Montagem', 'Disponha os 8 squares lado a lado, formando uma única faixa.']);
+    expect(r3.body!.at(-1)).toBe('Rem. o fio.');
+    const last = parts[0].rows[3];
+    expect(last.body).toEqual([
+      'Com o fio branco, suba 1 corr. e faça 1 pb. no mesmo p.',
+      'Siga com 1 pb. em cada p., fazendo 3 pb. no mesmo p. nos quatro cantos.',
+      'Feche com 1 p.bx.',
+    ]);
+    expect(last.after.slice(0, 2)).toEqual(['Montagem', 'Coloque os 6 squares lado a lado, formando uma faixa.']);
     expect(last.after).toContain('Acabamento');
   });
 
   it('usa o total escrito na receita', () => {
-    expect(bodySequence(parts[0].rows[0].body!)!.st).toHaveLength(10);
+    expect(bodySequence(parts[0].rows[0].body!)!.st).toHaveLength(12);
     expect(bodySequence(parts[0].rows[1].body!)).toBeNull();
   });
 
   it('expande as abreviações com ponto', () => {
-    expect(translateLine('Suba 3 corr. (equivalem ao primeiro pa.) e trab. mais 9 pa. dentro do anel.')!.plain)
-      .toBe('Suba 3 correntes (equivalem ao primeiro ponto alto) e trabalhe mais 9 pontos altos dentro do anel.');
+    expect(translateLine('Suba 3 corr. (valem como o primeiro pa.) e trab. mais 11 pa. dentro do anel.')!.plain)
+      .toBe('Suba 3 correntes (valem como o primeiro ponto alto) e trabalhe mais 11 pontos altos dentro do anel.');
     expect(translateLine('Feche a carr. com 1 p.bx.')!.plain).toBe('Feche a carreira com 1 ponto baixíssimo.');
   });
 });

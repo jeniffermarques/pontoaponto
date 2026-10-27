@@ -16,7 +16,7 @@ export interface Part {
   name: string;
   /** Quantas peças iguais: "Bolinhas amarelas (6)" são 6. */
   copies: number;
-  /** Instruções antes da 1ª carreira, como "Com o fio Amigurumi 5089 (Selva)". */
+  /** Instruções antes da 1ª carreira, como "Com o fio verde". */
   intro: string[];
   rows: Row[];
 }

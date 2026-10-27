@@ -80,7 +80,7 @@ describe('translateLine', () => {
   it('separa títulos e quantidade de peças', () => {
     expect(translateLine('Bolinhas amarelas (6)')).toMatchObject({ heading: true, total: null, plain: 'Bolinhas amarelas (6)' });
     expect(translateLine('Parte de baixo da árvore')!.heading).toBe(true);
-    expect(translateLine('Com o fio Amigurumi 5089 (Selva)')!.heading).toBe(false);
+    expect(translateLine('Com o fio verde (2 novelos)')!.heading).toBe(false);
     expect(translateLine('Arrematar.')!.heading).toBe(false);
     expect(translateLine('V2: 6 aum (12)')).toMatchObject({ heading: false, total: 12 });
   });

@@ -81,7 +81,7 @@ Feito com **React + TypeScript + Vite**. Não tem servidor: tudo roda no navegad
 - **Carreiras em texto corrido** (como "Suba 3 corr. no 1º p. … Rep. por toda a volta") só têm total quando a receita diz ("Total de 10 pa."); sem isso, o contador conta livre.
 - **Gráficos ainda não vão para o contador**: só receitas escritas.
 
-Os testes usam receitas reais como exemplo, em `app/src/lib/fixtures/` (miniárvore, almofada e cachecol de squares).
+Os testes usam receitas de exemplo escritas nos formatos mais comuns de revistas e blogs, em `app/src/lib/fixtures/`: árvore em partes (carreiras uma por linha), almofada (carreiras num parágrafo só, com abreviações com ponto) e cachecol de squares (carreira explicada em várias linhas).
 
 ## Origem do design
 
