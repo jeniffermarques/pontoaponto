@@ -1,0 +1,873 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600&family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+body{margin:0;background:#EEF1F8;font-family:'Nunito Sans',system-ui,sans-serif;color:#2B2350;-webkit-font-smoothing:antialiased}
+a{color:#7A55D3}a:hover{color:#5B3BB0}
+button{font-family:inherit}
+textarea:focus,input:focus{outline:2px solid #BFA9EE;outline-offset:1px}
+</style>
+</helmet>
+<section data-screen-label="Protótipo" style="padding:48px 56px 80px;display:flex;flex-direction:column;gap:32px;min-height:100vh;box-sizing:border-box">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:24px;flex-wrap:wrap">
+    <div style="display:flex;flex-direction:column;gap:6px;max-width:620px">
+      <div style="font-family:'Fredoka',sans-serif;font-size:34px;font-weight:600;color:#2B2350">Ponto a Ponto</div>
+      <div style="font-size:16px;line-height:1.5;color:#625C84;text-wrap:pretty">Contador de pontos e tradutor de receitas e gráficos de crochê, feito para quem está começando.</div>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px;align-items:flex-end">
+<nav data-variants="1" style="display:flex;gap:4px;background:#fff;border:1px solid #E6E4F0;border-radius:14px;padding:4px"><a href="Ponto%20a%20Ponto.dc.html" style="padding:8px 14px;border-radius:10px;font-size:13px;font-weight:700;text-decoration:none;background:#2B2350;color:#fff">A · Algodão</a><a href="Ponto%20a%20Ponto%20B.dc.html" style="padding:8px 14px;border-radius:10px;font-size:13px;font-weight:700;text-decoration:none;background:transparent;color:#2B2350">B · Novelo</a><a href="Ponto%20a%20Ponto%20C.dc.html" style="padding:8px 14px;border-radius:10px;font-size:13px;font-weight:700;text-decoration:none;background:transparent;color:#2B2350">C · Céu</a></nav>
+      <div style="display:flex;gap:4px;background:#fff;border:1px solid #E6E4F0;border-radius:14px;padding:4px">
+        <button onClick="{{ toMobile }}" style="height:40px;padding:0 20px;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;background:{{ tabM.bg }};color:{{ tabM.fg }}">Celular</button>
+        <button onClick="{{ toWeb }}" style="height:40px;padding:0 20px;border:none;border-radius:10px;font-size:14px;font-weight:700;cursor:pointer;background:{{ tabW.bg }};color:{{ tabW.fg }}">Computador</button>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;justify-content:center">
+    <sc-if value="{{ isMobile }}" hint-placeholder-val="{{ true }}">
+
+    <div data-screen-label="Mobile" style="display:flex;flex-direction:column;gap:12px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#625C84">MOBILE · 390×844</div>
+      <div style="width:390px;height:844px;border:10px solid #2B2350;border-radius:48px;background:#F7F8FC;overflow:hidden;position:relative;display:flex;flex-direction:column;box-sizing:content-box;box-shadow:0 30px 60px -30px rgba(43,35,80,.45)">
+        <div style="height:44px;flex:none;display:flex;align-items:center;justify-content:space-between;padding:0 28px;font-size:14px;font-weight:700">
+          <span>9:41</span><span style="font-family:'JetBrains Mono',monospace;font-size:11px;letter-spacing:2px">●●● ▮</span>
+        </div>
+        <div style="flex:1;overflow-y:auto;overflow-x:hidden">
+
+          <sc-if value="{{ mIs.inicio }}" hint-placeholder-val="{{ true }}">
+            <div style="padding:12px 20px 28px;display:flex;flex-direction:column;gap:18px">
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <div style="font-size:15px;color:#625C84">Olá!</div>
+                <div style="font-family:'Fredoka',sans-serif;font-size:27px;font-weight:600;line-height:1.15">O que vamos crochetar hoje?</div>
+              </div>
+              <div style="background:#fff;border:1px solid #E6E4F0;border-radius:24px;padding:16px;display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;flex-direction:column;gap:2px">
+                  <div style="font-family:'Fredoka',sans-serif;font-size:18px;font-weight:600">Traduzir uma receita</div>
+                  <div style="font-size:13px;color:#625C84">Cole o texto, tire uma foto ou envie um PDF.</div>
+                </div>
+                <textarea value="{{ draft }}" onChange="{{ onDraft }}" placeholder="ex: Rnd 1: 6 sc in magic ring (6)" style="height:84px;resize:none;border:1px solid #E6E4F0;border-radius:14px;padding:10px 12px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.6;color:#2B2350;background:#F7F8FC;box-sizing:border-box"></textarea>
+                <div style="display:flex;gap:8px">
+                  <button onClick="{{ translateDraft }}" style="flex:1;height:48px;border:none;border-radius:14px;background:#7A55D3;color:#fff;font-size:15px;font-weight:700;cursor:pointer">Traduzir</button>
+                  <button onClick="{{ homeFoto }}" style="width:72px;height:48px;border:1px solid #E6E4F0;border-radius:14px;background:#fff;font-size:14px;font-weight:700;color:#2B2350;cursor:pointer">Foto</button>
+                  <button onClick="{{ homePdf }}" style="width:72px;height:48px;border:1px solid #E6E4F0;border-radius:14px;background:#fff;font-size:14px;font-weight:700;color:#2B2350;cursor:pointer">PDF</button>
+                </div>
+              </div>
+              <div style="background:#7A55D3;color:#fff;border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:12px">
+                <div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#fff">Projeto atual</div>
+                <div style="font-family:'Fredoka',sans-serif;font-size:21px;font-weight:500">Ursinho amigurumi · cabeça</div>
+                <div style="font-size:14px;color:#fff">Volta {{ rowNum }} de {{ rowTotal }} · {{ count }} de {{ meta }} pontos</div>
+                <div style="height:8px;border-radius:8px;background:rgba(255,255,255,.28);overflow:hidden"><div style="height:100%;width:{{ projPct }}%;background:#fff;border-radius:8px"></div></div>
+                <button onClick="{{ goM.contador }}" style="margin-top:4px;height:48px;border:none;border-radius:14px;background:#fff;color:#5B3BB0;font-size:16px;font-weight:700;cursor:pointer">Continuar contando</button>
+              </div>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                <button onClick="{{ goM.tradutor }}" style="text-align:left;border:none;border-radius:20px;background:#FDE7EF;padding:16px;display:flex;flex-direction:column;gap:10px;cursor:pointer;color:#2B2350">
+                  <span style="width:40px;height:40px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-size:17px;font-weight:600;color:#B23A6E">Aa</span>
+                  <span style="font-family:'Fredoka',sans-serif;font-size:17px;font-weight:500">Traduzir receita</span>
+                  <span style="font-size:13px;color:#625C84;line-height:1.35">Abreviações e inglês para português</span>
+                </button>
+                <button onClick="{{ goM.grafico }}" style="text-align:left;border:none;border-radius:20px;background:#DCEEFB;padding:16px;display:flex;flex-direction:column;gap:10px;cursor:pointer;color:#2B2350">
+                  <span style="width:40px;height:40px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#3E6FD8">×</span>
+                  <span style="font-family:'Fredoka',sans-serif;font-size:17px;font-weight:500">Ler gráfico</span>
+                  <span style="font-size:13px;color:#625C84;line-height:1.35">Símbolos viram passo a passo</span>
+                </button>
+                <button onClick="{{ goM.glossario }}" style="text-align:left;border:none;border-radius:20px;background:#EEE8FB;padding:16px;display:flex;flex-direction:column;gap:10px;cursor:pointer;color:#2B2350">
+                  <span style="width:40px;height:40px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#7A55D3">≡</span>
+                  <span style="font-family:'Fredoka',sans-serif;font-size:17px;font-weight:500">Glossário</span>
+                  <span style="font-size:13px;color:#625C84;line-height:1.35">O que é cada ponto</span>
+                </button>
+                <button onClick="{{ goM.contador }}" style="text-align:left;border:none;border-radius:20px;background:#E3EDFC;padding:16px;display:flex;flex-direction:column;gap:10px;cursor:pointer;color:#2B2350">
+                  <span style="width:40px;height:40px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-size:16px;font-weight:600;color:#3E6FD8">+1</span>
+                  <span style="font-family:'Fredoka',sans-serif;font-size:17px;font-weight:500">Contador</span>
+                  <span style="font-size:13px;color:#625C84;line-height:1.35">Pontos e voltas</span>
+                </button>
+              </div>
+              <div style="background:#fff;border:1px solid #E6E4F0;border-radius:20px;padding:16px;display:flex;gap:12px;align-items:flex-start">
+                <span style="flex:none;width:36px;height:36px;border-radius:50%;background:#F4A6C0;display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-weight:600;font-size:18px">V</span>
+                <div style="display:flex;flex-direction:column;gap:4px">
+                  <div style="font-weight:700;font-size:14px">Dica para iniciantes</div>
+                  <div style="font-size:14px;line-height:1.45;color:#625C84;text-wrap:pretty">Aumento (aum) é fazer 2 pontos no mesmo lugar. É assim que a peça cresce.</div>
+                </div>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ mIs.contador }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:8px 20px 24px;display:flex;flex-direction:column;gap:16px;align-items:stretch">
+              <sc-if value="{{ showHelp }}" hint-placeholder-val="{{ false }}">
+                <div style="background:#FDE7EF;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:10px">
+                  <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:700;font-size:15px">Como usar o contador</span><button onClick="{{ hideHelp }}" style="height:32px;border:none;background:#fff;border-radius:10px;padding:0 12px;font-size:13px;font-weight:700;color:#B23A6E;cursor:pointer">Entendi</button></div>
+                  <ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:14px;line-height:1.45">
+                    <li>Leia o que fazer nesta volta.</li>
+                    <li>Faça um ponto e toque no círculo. O app mostra qual é o próximo.</li>
+                    <li>Quando chegar ao total, a volta está completa. Passe para a próxima.</li>
+                  </ol>
+                </div>
+              </sc-if>
+              <div style="display:flex;align-items:center;justify-content:space-between">
+                <button onClick="{{ prevRow }}" style="width:44px;height:44px;border-radius:14px;border:1px solid #E6E4F0;background:#fff;font-size:20px;color:#2B2350;cursor:pointer">‹</button>
+                <div style="display:flex;flex-direction:column;align-items:center">
+                  <div style="font-size:12px;color:#625C84">Ursinho · cabeça</div>
+                  <div style="font-family:'Fredoka',sans-serif;font-size:22px;font-weight:600">Volta {{ rowNum }} <span style="font-weight:400;color:#625C84;font-size:16px">de {{ rowTotal }}</span></div>
+                </div>
+                <button onClick="{{ nextRow }}" style="width:44px;height:44px;border-radius:14px;border:1px solid #E6E4F0;background:#fff;font-size:20px;color:#2B2350;cursor:pointer">›</button>
+              </div>
+              <div style="background:#DCEEFB;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:8px">
+                <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#2F5BB8">O que fazer nesta volta</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#4A5A80">{{ cur.raw }}</div>
+                <div style="font-size:17px;line-height:1.6;font-weight:600">
+                  <sc-for list="{{ cur.segs }}" as="g" hint-placeholder-count="3"><sc-if value="{{ g.isText }}"><span>{{ g.text }}</span></sc-if><sc-if value="{{ g.isTerm }}"><span onClick="{{ g.pickM }}" style="background:#FDE7EF;color:#B23A6E;font-weight:700;border-radius:6px;padding:1px 5px;cursor:pointer;border-bottom:2px dotted #F4A6C0">{{ g.text }}</span></sc-if></sc-for>
+                </div>
+                <div style="font-size:12px;color:#4A5A80">Toque nas palavras rosa para ver como fazer.</div>
+              </div>
+              <div style="background:#fff;border:1px solid #E6E4F0;border-radius:20px;padding:14px 16px;display:flex;flex-direction:column;gap:12px">
+                <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+                  <div style="display:flex;flex-direction:column;gap:2px">
+                    <span style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#625C84">Agora</span>
+                    <span onClick="{{ step.pickM }}" style="font-family:'Fredoka',sans-serif;font-size:21px;font-weight:600;color:#B23A6E;cursor:pointer;border-bottom:2px dotted #F4A6C0;align-self:flex-start">{{ step.now }}</span>
+                    <span style="font-size:13px;color:#625C84">{{ step.part }}</span>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:2px;align-items:flex-end;text-align:right">
+                    <span style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#625C84">Depois</span>
+                    <span style="font-size:15px;font-weight:700">{{ step.next }}</span>
+                    <span style="font-size:13px;color:#625C84">{{ step.repText }}</span>
+                  </div>
+                </div>
+                <div style="display:flex;flex-wrap:wrap;gap:4px;align-items:center">
+                  <sc-for list="{{ dots }}" as="d" hint-placeholder-count="18"><span style="width:{{ d.size }}px;height:{{ d.size }}px;border-radius:50%;background:{{ d.bg }};border:2px solid {{ d.bd }};box-sizing:border-box"></span></sc-for>
+                </div>
+                <div style="display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:#625C84"><span style="display:flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:50%;background:#3E6FD8"></span>ponto baixo</span><span style="display:flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:50%;background:#B23A6E"></span>aumento</span><span style="display:flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:50%;background:#7A55D3"></span>diminuição</span></div>
+              </div>
+              <div style="display:flex;justify-content:center;padding:10px 0">
+                <sc-if value="{{ notDone }}" hint-placeholder-val="{{ true }}">
+                  <button onClick="{{ plus }}" style="width:180px;height:180px;border-radius:50%;border:none;background:#7A55D3;color:#fff;box-shadow:0 0 0 12px #EEE8FB;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer" style-active="transform:scale(.97)">
+                    <span style="font-family:'Fredoka',sans-serif;font-size:68px;font-weight:600;line-height:1">{{ count }}</span>
+                    <span style="font-size:15px">de {{ meta }} pontos</span>
+                    <span style="font-size:12px;margin-top:6px;opacity:.9">toque para +1</span>
+                  </button>
+                </sc-if>
+                <sc-if value="{{ done }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ nextRow }}" style="width:180px;height:180px;border-radius:50%;border:none;background:#3E6FD8;color:#fff;box-shadow:0 0 0 12px #DCEEFB;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer">
+                    <span style="font-family:'Fredoka',sans-serif;font-size:56px;font-weight:600;line-height:1">{{ count }}</span>
+                    <span style="font-size:16px;font-weight:700">Volta completa!</span>
+                    <span style="font-size:12px">toque para a próxima</span>
+                  </button>
+                </sc-if>
+              </div>
+              <div style="height:8px;border-radius:8px;background:#E6E4F0;overflow:hidden"><div style="height:100%;width:{{ pct }}%;background:#F4A6C0;border-radius:8px"></div></div>
+              <div style="display:flex;gap:10px">
+                <button onClick="{{ minus }}" style="width:64px;height:52px;border-radius:16px;border:1px solid #E6E4F0;background:#fff;font-family:'Fredoka',sans-serif;font-size:18px;font-weight:600;color:#2B2350;cursor:pointer">−1</button>
+                <button onClick="{{ reset }}" style="width:80px;height:52px;border-radius:16px;border:1px solid #E6E4F0;background:#fff;font-size:15px;font-weight:700;color:#2B2350;cursor:pointer">Zerar</button>
+                <button onClick="{{ nextRow }}" style="flex:1;height:52px;border-radius:16px;border:none;background:#3E6FD8;color:#fff;font-size:15px;font-weight:700;cursor:pointer">Próxima volta ›</button>
+              </div>
+              <sc-if value="{{ helpHidden }}"><button onClick="{{ openHelp }}" style="align-self:center;height:36px;border:none;background:transparent;font-size:13px;font-weight:700;color:#5B3BB0;cursor:pointer">Como funciona o contador?</button></sc-if>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ mIs.tradutor }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:8px 20px 24px;display:flex;flex-direction:column;gap:14px">
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <div style="font-family:'Fredoka',sans-serif;font-size:24px;font-weight:600">Traduzir receita</div>
+                <div style="font-size:14px;line-height:1.45;color:#625C84;text-wrap:pretty">Cole a receita, tire uma foto ou envie um PDF. Ela aparece em português, linha por linha.</div>
+              </div>
+              <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
+                <sc-for list="{{ sources }}" as="o" hint-placeholder-count="3"><button onClick="{{ o.go }}" style="height:64px;border-radius:14px;border:1.5px solid {{ o.bd }};background:{{ o.bg }};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer;color:#2B2350"><span style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:600;color:#5B3BB0">{{ o.g }}</span><span style="font-size:12px;font-weight:700">{{ o.label }}</span></button></sc-for>
+              </div>
+              <sc-if value="{{ srcFile }}" hint-placeholder-val="{{ false }}">
+                <div style="border-radius:16px;border:1.5px dashed #BFA9EE;background:repeating-linear-gradient(135deg,#fff 0 10px,#F7F8FC 10px 20px);padding:20px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center">
+                  <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#625C84">{{ srcHint }}</span>
+                  <button onClick="{{ readSrc }}" style="height:44px;padding:0 18px;border:none;border-radius:12px;background:#7A55D3;color:#fff;font-size:14px;font-weight:700;cursor:pointer">{{ readLabel }}</button>
+                  <span style="font-size:12px;color:#625C84">No protótipo, usamos uma receita de exemplo.</span>
+                </div>
+              </sc-if>
+              <sc-if value="{{ notice }}"><div style="background:#DCEEFB;border-radius:14px;padding:10px 14px;font-size:13px;font-weight:600;color:#2F5BB8">{{ notice }}</div></sc-if>
+              <div style="display:flex;gap:8px;flex-wrap:wrap">
+                <button onClick="{{ loadEN }}" style="height:36px;padding:0 14px;border-radius:18px;border:1px solid #E6E4F0;background:#fff;font-size:13px;font-weight:700;color:#2B2350;cursor:pointer">Exemplo em inglês</button>
+                <button onClick="{{ loadPT }}" style="height:36px;padding:0 14px;border-radius:18px;border:1px solid #E6E4F0;background:#fff;font-size:13px;font-weight:700;color:#2B2350;cursor:pointer">Com abreviações</button>
+                <button onClick="{{ clear }}" style="height:36px;padding:0 14px;border-radius:18px;border:none;background:transparent;font-size:13px;font-weight:700;color:#625C84;cursor:pointer">Limpar</button>
+              </div>
+              <textarea value="{{ input }}" onChange="{{ onInput }}" placeholder="Cole sua receita aqui…" style="height:130px;resize:none;border:1px solid #E6E4F0;border-radius:16px;padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:12px;line-height:1.6;color:#2B2350;background:#fff;box-sizing:border-box"></textarea>
+              <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#625C84">Tradução · {{ lineCount }} linhas</div>
+              <sc-if value="{{ noLines }}" hint-placeholder-val="{{ false }}">
+                <div style="border:1.5px dashed #E6E4F0;border-radius:16px;padding:20px;text-align:center;font-size:14px;color:#625C84">Cole uma receita acima ou toque em um exemplo.</div>
+              </sc-if>
+              <sc-for list="{{ lines }}" as="l" hint-placeholder-count="3">
+                <div style="background:#fff;border:1px solid #E6E4F0;border-radius:18px;padding:14px;display:flex;flex-direction:column;gap:8px">
+                  <div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+                    <sc-if value="{{ l.label }}"><span style="background:#EEE8FB;color:#5B3BB0;font-size:12px;font-weight:700;border-radius:8px;padding:3px 8px">{{ l.label }}</span></sc-if>
+                    <sc-if value="{{ l.total }}"><span style="background:#DCEEFB;color:#2F5BB8;font-size:12px;font-weight:700;border-radius:8px;padding:3px 8px">total: {{ l.total }} pontos</span></sc-if>
+                  </div>
+                  <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#625C84">{{ l.raw }}</div>
+                  <div style="font-size:15px;line-height:1.6;font-weight:600"><sc-for list="{{ l.segs }}" as="g"><sc-if value="{{ g.isText }}"><span>{{ g.text }}</span></sc-if><sc-if value="{{ g.isTerm }}"><span onClick="{{ g.pickM }}" style="background:#FDE7EF;color:#B23A6E;font-weight:700;border-radius:6px;padding:1px 5px;cursor:pointer;border-bottom:2px dotted #F4A6C0">{{ g.text }}</span></sc-if></sc-for></div>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ mIs.grafico }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:8px 20px 24px;display:flex;flex-direction:column;gap:14px">
+              <div style="display:flex;flex-direction:column;gap:4px">
+                <div style="font-family:'Fredoka',sans-serif;font-size:24px;font-weight:600">Ler gráfico</div>
+                <div style="font-size:14px;line-height:1.45;color:#625C84">Toque em uma carreira para ver o passo a passo.</div>
+              </div>
+              <button onClick="{{ chartPhoto }}" style="height:48px;border-radius:14px;border:1.5px dashed #BFA9EE;background:#fff;font-size:14px;font-weight:700;color:#5B3BB0;cursor:pointer">{{ chartBtn }}</button>
+              <sc-if value="{{ chartNotice }}"><div style="background:#DCEEFB;border-radius:14px;padding:10px 14px;font-size:13px;font-weight:600;color:#2F5BB8">{{ chartNotice }}</div></sc-if>
+              <div style="background:#fff;border:1px solid #E6E4F0;border-radius:20px;padding:12px 8px;display:flex;flex-direction:column;gap:2px">
+                <sc-for list="{{ chart }}" as="r" hint-placeholder-count="5">
+                  <div onClick="{{ r.pick }}" style="display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:12px;background:{{ r.bg }};cursor:pointer">
+                    <span style="width:18px;flex:none;font-size:11px;font-weight:700;color:#625C84">{{ r.short }}</span>
+                    <div style="flex:1;display:flex;flex-direction:{{ r.flow }};gap:0">
+                      <sc-for list="{{ r.cells }}" as="c"><span style="width:19px;height:24px;flex:none;display:flex;align-items:center;justify-content:center;font-size:{{ c.fs }}px;font-weight:700;color:{{ c.color }}">{{ c.s }}</span></sc-for>
+                    </div>
+                    <span style="width:14px;flex:none;font-size:13px;color:#625C84">{{ r.arrow }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:#625C84">
+                <span><b style="color:#B23A6E">○</b> corrente</span><span><b style="color:#3E6FD8">×</b> ponto baixo</span><span><b style="color:#7A55D3">Ŧ</b> ponto alto</span>
+              </div>
+              <div style="background:#DCEEFB;border-radius:20px;padding:16px;display:flex;flex-direction:column;gap:8px">
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <span style="font-family:'Fredoka',sans-serif;font-size:19px;font-weight:600">{{ chartSel.label }}</span>
+                  <span style="font-size:12px;font-weight:700;color:#2F5BB8">{{ chartSel.dirText }}</span>
+                </div>
+                <div style="font-size:16px;line-height:1.6;font-weight:600"><sc-for list="{{ chartSel.segs }}" as="g"><sc-if value="{{ g.isText }}"><span>{{ g.text }}</span></sc-if><sc-if value="{{ g.isTerm }}"><span onClick="{{ g.pickM }}" style="background:#FDE7EF;color:#B23A6E;font-weight:700;border-radius:6px;padding:1px 5px;cursor:pointer;border-bottom:2px dotted #F4A6C0">{{ g.text }}</span></sc-if></sc-for></div>
+                <div style="font-size:14px;line-height:1.45;color:#3A4A70;text-wrap:pretty">{{ chartSel.tip }}</div>
+              </div>
+            </div>
+          </sc-if>
+
+          <sc-if value="{{ mIs.glossario }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:8px 20px 24px;display:flex;flex-direction:column;gap:14px">
+              <div style="font-family:'Fredoka',sans-serif;font-size:24px;font-weight:600">Glossário</div>
+              <div style="background:#FDE7EF;border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:4px">
+                <div style="font-weight:700;font-size:14px">Primeira vez? Comece por aqui</div>
+                <div style="font-size:13px;line-height:1.45;color:#4A4470;text-wrap:pretty">Aprenda nesta ordem: nó corrediço, corrente e ponto baixo. Com esses três você já faz a primeira peça.</div>
+              </div>
+              <input value="{{ q }}" onChange="{{ onQ }}" placeholder="Buscar: pb, sc, aumento…" style="height:46px;border:1px solid #E6E4F0;border-radius:14px;padding:0 14px;font-size:15px;background:#fff;color:#2B2350;font-family:inherit;box-sizing:border-box">
+              <sc-for list="{{ glossGroups }}" as="gr" hint-placeholder-count="2">
+                <div style="display:flex;flex-direction:column;gap:8px">
+                  <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#625C84;padding-top:4px">{{ gr.title }}</div>
+                  <sc-for list="{{ gr.items }}" as="t" hint-placeholder-count="3">
+                    <div onClick="{{ t.pickM }}" style="background:#fff;border:1px solid #E6E4F0;border-radius:18px;padding:14px;display:flex;gap:12px;align-items:flex-start;cursor:pointer">
+                      <span style="flex:none;width:44px;height:44px;border-radius:14px;background:#EEE8FB;display:flex;align-items:center;justify-content:center;font-size:{{ t.symFs }}px;font-weight:700;color:#5B3BB0">{{ t.symShow }}</span>
+                      <div style="flex:1;display:flex;flex-direction:column;gap:3px;min-width:0">
+                        <div style="font-family:'Fredoka',sans-serif;font-size:17px;font-weight:500">{{ t.pt }}</div>
+                        <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#625C84">{{ t.abbrLine }}</div>
+                        <div style="font-size:13px;line-height:1.4;color:#625C84">{{ t.use }}</div>
+                        <div style="font-size:13px;font-weight:700;color:#5B3BB0;margin-top:2px">Ver passo a passo ›</div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-for>
+            </div>
+          </sc-if>
+        </div>
+
+        <div style="height:74px;flex:none;border-top:1px solid #E6E4F0;background:#fff;display:flex;padding:6px 6px 14px;box-sizing:border-box">
+          <sc-for list="{{ navM }}" as="n" hint-placeholder-count="5">
+            <button onClick="{{ n.go }}" style="flex:1;border:none;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;color:{{ n.fg }}">
+              <span style="min-width:44px;height:28px;border-radius:14px;background:{{ n.bg }};display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-size:15px;font-weight:600">{{ n.g }}</span>
+              <span style="font-size:11px;font-weight:700">{{ n.label }}</span>
+            </button>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ hasSelM }}" hint-placeholder-val="{{ false }}">
+          <div onClick="{{ closeM }}" style="position:absolute;inset:0;background:rgba(43,35,80,.38)"></div>
+          <div style="position:absolute;left:0;right:0;bottom:0;max-height:86%;overflow-y:auto;box-sizing:border-box;background:#fff;border-radius:28px 28px 0 0;padding:14px 22px 30px;display:flex;flex-direction:column;gap:14px">
+            <div style="width:40px;height:5px;border-radius:3px;background:#E6E4F0;align-self:center"></div>
+            <div style="display:flex;gap:14px;align-items:center">
+              <span style="width:60px;height:60px;border-radius:18px;background:#FDE7EF;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:700;color:#B23A6E">{{ selM.symShow }}</span>
+              <div style="display:flex;flex-direction:column;gap:2px">
+                <div style="font-family:'Fredoka',sans-serif;font-size:23px;font-weight:600">{{ selM.pt }}</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#625C84">{{ selM.abbrLine }}</div>
+              </div>
+            </div>
+            <div style="font-size:16px;line-height:1.55;text-wrap:pretty">{{ selM.desc }}</div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#625C84">Passo a passo</div>
+              <sc-for list="{{ selM.stepList }}" as="p" hint-placeholder-count="3">
+                <div style="display:flex;gap:12px;align-items:flex-start">
+                  <span style="flex:none;width:28px;height:28px;border-radius:50%;background:#7A55D3;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-size:14px;font-weight:600">{{ p.n }}</span>
+                  <span style="font-size:15px;line-height:1.5;padding-top:3px">{{ p.x }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="background:#DCEEFB;border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:12px;font-weight:700;color:#2F5BB8">Quando usar</div>
+              <div style="font-size:14px;line-height:1.45">{{ selM.use }}</div>
+            </div>
+            <div style="background:#FDE7EF;border-radius:16px;padding:12px 14px;display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:12px;font-weight:700;color:#B23A6E">Cuidado com</div>
+              <div style="font-size:14px;line-height:1.45">{{ selM.tip }}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:4px">
+              <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#625C84">Na receita aparece assim</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-size:13px;background:#F7F8FC;border-radius:10px;padding:8px 12px">{{ selM.ex }}</div>
+            </div>
+            <button onClick="{{ closeM }}" style="height:52px;border:none;border-radius:16px;background:#7A55D3;color:#fff;font-size:16px;font-weight:700;cursor:pointer">Entendi</button>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+
+    </sc-if>
+    <sc-if value="{{ isWeb }}" hint-placeholder-val="{{ false }}">
+    <div data-screen-label="Web" style="display:flex;flex-direction:column;gap:12px">
+      <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#625C84">WEB · 1280×820</div>
+      <div style="width:1280px;height:820px;border-radius:16px;background:#F7F8FC;border:1px solid #DAD7E8;overflow:hidden;display:flex;flex-direction:column;position:relative;box-shadow:0 30px 60px -30px rgba(43,35,80,.35)">
+        <div style="height:40px;flex:none;background:#fff;border-bottom:1px solid #E6E4F0;display:flex;align-items:center;gap:8px;padding:0 16px">
+          <span style="width:11px;height:11px;border-radius:50%;background:#F4A6C0"></span><span style="width:11px;height:11px;border-radius:50%;background:#DCEEFB"></span><span style="width:11px;height:11px;border-radius:50%;background:#EEE8FB"></span>
+          <span style="margin-left:16px;height:24px;padding:0 14px;border-radius:12px;background:#F7F8FC;display:flex;align-items:center;font-family:'JetBrains Mono',monospace;font-size:11px;color:#625C84">pontoaponto.app</span>
+        </div>
+        <div style="flex:1;display:flex;min-height:0">
+          <div style="width:236px;flex:none;background:#fff;border-right:1px solid #E6E4F0;padding:24px 16px;display:flex;flex-direction:column;gap:6px;box-sizing:border-box">
+            <div style="display:flex;align-items:center;gap:10px;padding:0 8px 20px">
+              <span style="width:30px;height:30px;border-radius:50%;background:#F4A6C0;box-shadow:10px 0 0 -2px #7A55D3"></span>
+              <span style="font-family:'Fredoka',sans-serif;font-size:20px;font-weight:600;margin-left:8px">Ponto a Ponto</span>
+            </div>
+            <sc-for list="{{ navW }}" as="n" hint-placeholder-count="5">
+              <button onClick="{{ n.go }}" style="height:44px;border:none;border-radius:12px;background:{{ n.bg }};color:{{ n.fg }};display:flex;align-items:center;gap:12px;padding:0 12px;cursor:pointer;font-size:15px;font-weight:700;text-align:left">
+                <span style="width:28px;font-family:'Fredoka',sans-serif;font-size:15px;font-weight:600;text-align:center">{{ n.g }}</span>{{ n.label }}
+              </button>
+            </sc-for>
+            <div style="margin-top:auto;background:#DCEEFB;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:6px">
+              <div style="font-size:12px;font-weight:700;color:#2F5BB8">Projeto atual</div>
+              <div style="font-weight:700;font-size:14px">Ursinho · cabeça</div>
+              <div style="font-size:13px;color:#3A4A70">Volta {{ rowNum }} de {{ rowTotal }}</div>
+              <div style="height:6px;border-radius:6px;background:#fff;overflow:hidden"><div style="height:100%;width:{{ projPct }}%;background:#3E6FD8"></div></div>
+            </div>
+          </div>
+          <div style="flex:1;min-width:0;overflow-y:auto;padding:32px 36px">
+
+            <sc-if value="{{ wIs.inicio }}" hint-placeholder-val="{{ true }}">
+              <div style="display:flex;flex-direction:column;gap:24px">
+                <div style="display:flex;flex-direction:column;gap:4px">
+                  <div style="font-size:16px;color:#625C84">Olá!</div>
+                  <div style="font-family:'Fredoka',sans-serif;font-size:34px;font-weight:600">O que vamos crochetar hoje?</div>
+                </div>
+                <div style="background:#fff;border:1px solid #E6E4F0;border-radius:24px;padding:22px 24px;display:grid;grid-template-columns:minmax(0,1fr) 220px;gap:20px;align-items:stretch">
+                  <div style="display:flex;flex-direction:column;gap:10px">
+                    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap">
+                      <div style="font-family:'Fredoka',sans-serif;font-size:20px;font-weight:600">Traduzir uma receita</div>
+                      <div style="font-size:14px;color:#625C84">Cole o texto em inglês ou com abreviações.</div>
+                    </div>
+                    <textarea value="{{ draft }}" onChange="{{ onDraft }}" placeholder="ex: Rnd 1: 6 sc in magic ring (6)" style="height:96px;resize:none;border:1px solid #E6E4F0;border-radius:14px;padding:12px 14px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.6;color:#2B2350;background:#F7F8FC;box-sizing:border-box"></textarea>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:8px;justify-content:flex-end">
+                    <button onClick="{{ translateDraft }}" style="height:48px;border:none;border-radius:14px;background:#7A55D3;color:#fff;font-size:15px;font-weight:700;cursor:pointer">Traduzir</button>
+                    <div style="display:flex;gap:8px">
+                      <button onClick="{{ homeFoto }}" style="flex:1;height:44px;border:1px solid #E6E4F0;border-radius:14px;background:#fff;font-size:14px;font-weight:700;color:#2B2350;cursor:pointer">Foto</button>
+                      <button onClick="{{ homePdf }}" style="flex:1;height:44px;border:1px solid #E6E4F0;border-radius:14px;background:#fff;font-size:14px;font-weight:700;color:#2B2350;cursor:pointer">PDF</button>
+                    </div>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:20px">
+                  <div style="background:#7A55D3;color:#fff;border-radius:24px;padding:28px;display:flex;flex-direction:column;gap:14px">
+                    <div style="font-size:12px;font-weight:700;letter-spacing:.08em;text-transform:uppercase">Projeto atual</div>
+                    <div style="font-family:'Fredoka',sans-serif;font-size:28px;font-weight:500">Ursinho amigurumi · cabeça</div>
+                    <div style="font-size:15px">Volta {{ rowNum }} de {{ rowTotal }} · {{ count }} de {{ meta }} pontos nesta volta</div>
+                    <div style="height:10px;border-radius:10px;background:rgba(255,255,255,.28);overflow:hidden"><div style="height:100%;width:{{ projPct }}%;background:#fff"></div></div>
+                    <button onClick="{{ goW.contador }}" style="align-self:flex-start;margin-top:6px;height:48px;padding:0 24px;border:none;border-radius:14px;background:#fff;color:#5B3BB0;font-size:16px;font-weight:700;cursor:pointer">Continuar contando</button>
+                  </div>
+                  <div style="background:#fff;border:1px solid #E6E4F0;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:12px">
+                    <span style="width:44px;height:44px;border-radius:50%;background:#F4A6C0;display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-weight:600;font-size:20px">V</span>
+                    <div style="font-weight:700;font-size:16px">Dica para iniciantes</div>
+                    <div style="font-size:15px;line-height:1.5;color:#625C84;text-wrap:pretty">Aumento (aum) é fazer 2 pontos no mesmo lugar. É assim que a peça cresce. Diminuição (dim) é o contrário: junta 2 pontos em 1.</div>
+                  </div>
+                </div>
+                <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px">
+                  <button onClick="{{ goW.tradutor }}" style="text-align:left;border:none;border-radius:20px;background:#FDE7EF;padding:22px;display:flex;flex-direction:column;gap:10px;cursor:pointer;color:#2B2350">
+                    <span style="width:44px;height:44px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-size:18px;font-weight:600;color:#B23A6E">Aa</span>
+                    <span style="font-family:'Fredoka',sans-serif;font-size:19px;font-weight:500">Traduzir receita</span>
+                    <span style="font-size:14px;color:#625C84;line-height:1.4">Cole uma receita em inglês ou com abreviações e leia em português.</span>
+                  </button>
+                  <button onClick="{{ goW.grafico }}" style="text-align:left;border:none;border-radius:20px;background:#DCEEFB;padding:22px;display:flex;flex-direction:column;gap:10px;cursor:pointer;color:#2B2350">
+                    <span style="width:44px;height:44px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#3E6FD8">×</span>
+                    <span style="font-family:'Fredoka',sans-serif;font-size:19px;font-weight:500">Ler gráfico</span>
+                    <span style="font-size:14px;color:#625C84;line-height:1.4">Cada carreira do diagrama vira um passo a passo escrito.</span>
+                  </button>
+                  <button onClick="{{ goW.glossario }}" style="text-align:left;border:none;border-radius:20px;background:#EEE8FB;padding:22px;display:flex;flex-direction:column;gap:10px;cursor:pointer;color:#2B2350">
+                    <span style="width:44px;height:44px;border-radius:12px;background:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;font-weight:700;color:#7A55D3">≡</span>
+                    <span style="font-family:'Fredoka',sans-serif;font-size:19px;font-weight:500">Glossário</span>
+                    <span style="font-size:14px;color:#625C84;line-height:1.4">Símbolo, abreviação e explicação de cada ponto.</span>
+                  </button>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ wIs.contador }}" hint-placeholder-val="{{ false }}">
+              <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:24px;align-items:start">
+                <div style="background:#fff;border:1px solid #E6E4F0;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:20px">
+                  <sc-if value="{{ showHelp }}" hint-placeholder-val="{{ false }}">
+                    <div style="background:#FDE7EF;border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:10px">
+                      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-weight:700;font-size:15px">Como usar o contador</span><button onClick="{{ hideHelp }}" style="height:32px;border:none;background:#fff;border-radius:10px;padding:0 12px;font-size:13px;font-weight:700;color:#B23A6E;cursor:pointer">Entendi</button></div>
+                      <ol style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:6px;font-size:14px;line-height:1.45">
+                        <li>Leia o que fazer nesta volta.</li>
+                        <li>Faça um ponto e clique no círculo (ou aperte espaço). O app mostra qual é o próximo.</li>
+                        <li>Quando chegar ao total, a volta está completa. Passe para a próxima.</li>
+                      </ol>
+                    </div>
+                  </sc-if>
+                  <div style="display:flex;align-items:center;justify-content:space-between">
+                    <button onClick="{{ prevRow }}" style="width:44px;height:44px;border-radius:14px;border:1px solid #E6E4F0;background:#fff;font-size:20px;color:#2B2350;cursor:pointer">‹</button>
+                    <div style="display:flex;flex-direction:column;align-items:center">
+                      <div style="font-size:13px;color:#625C84">Ursinho · cabeça</div>
+                      <div style="font-family:'Fredoka',sans-serif;font-size:26px;font-weight:600">Volta {{ rowNum }} <span style="font-weight:400;color:#625C84;font-size:18px">de {{ rowTotal }}</span></div>
+                    </div>
+                    <button onClick="{{ nextRow }}" style="width:44px;height:44px;border-radius:14px;border:1px solid #E6E4F0;background:#fff;font-size:20px;color:#2B2350;cursor:pointer">›</button>
+                  </div>
+                  <div style="display:flex;justify-content:center;padding:14px 0">
+                    <sc-if value="{{ notDone }}" hint-placeholder-val="{{ true }}">
+                      <button onClick="{{ plus }}" style="width:230px;height:230px;border-radius:50%;border:none;background:#7A55D3;color:#fff;box-shadow:0 0 0 14px #EEE8FB;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;cursor:pointer" style-active="transform:scale(.97)">
+                        <span style="font-family:'Fredoka',sans-serif;font-size:76px;font-weight:600;line-height:1">{{ count }}</span>
+                        <span style="font-size:16px">de {{ meta }} pontos</span>
+                        <span style="font-size:13px;margin-top:6px;opacity:.9">clique ou aperte espaço</span>
+                      </button>
+                    </sc-if>
+                    <sc-if value="{{ done }}" hint-placeholder-val="{{ false }}">
+                      <button onClick="{{ nextRow }}" style="width:230px;height:230px;border-radius:50%;border:none;background:#3E6FD8;color:#fff;box-shadow:0 0 0 14px #DCEEFB;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer">
+                        <span style="font-family:'Fredoka',sans-serif;font-size:62px;font-weight:600;line-height:1">{{ count }}</span>
+                        <span style="font-size:17px;font-weight:700">Volta completa!</span>
+                        <span style="font-size:13px">clique para a próxima</span>
+                      </button>
+                    </sc-if>
+                  </div>
+                  <div style="height:8px;border-radius:8px;background:#E6E4F0;overflow:hidden"><div style="height:100%;width:{{ pct }}%;background:#F4A6C0"></div></div>
+                  <div style="display:flex;gap:10px">
+                    <button onClick="{{ minus }}" style="width:72px;height:50px;border-radius:14px;border:1px solid #E6E4F0;background:#fff;font-family:'Fredoka',sans-serif;font-size:18px;font-weight:600;color:#2B2350;cursor:pointer">−1</button>
+                    <button onClick="{{ reset }}" style="width:90px;height:50px;border-radius:14px;border:1px solid #E6E4F0;background:#fff;font-size:15px;font-weight:700;color:#2B2350;cursor:pointer">Zerar</button>
+                    <button onClick="{{ nextRow }}" style="flex:1;height:50px;border-radius:14px;border:none;background:#3E6FD8;color:#fff;font-size:15px;font-weight:700;cursor:pointer">Próxima volta ›</button>
+                  </div>
+                  <div style="border:1px solid #E6E4F0;border-radius:18px;padding:16px 18px;display:flex;flex-direction:column;gap:12px">
+                    <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px">
+                      <div style="display:flex;flex-direction:column;gap:2px">
+                        <span style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#625C84">Agora</span>
+                        <span onClick="{{ step.pickW }}" style="font-family:'Fredoka',sans-serif;font-size:23px;font-weight:600;color:#B23A6E;cursor:pointer;border-bottom:2px dotted #F4A6C0;align-self:flex-start">{{ step.now }}</span>
+                        <span style="font-size:14px;color:#625C84">{{ step.part }}</span>
+                      </div>
+                      <div style="display:flex;flex-direction:column;gap:2px;align-items:flex-end;text-align:right">
+                        <span style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#625C84">Depois</span>
+                        <span style="font-size:16px;font-weight:700">{{ step.next }}</span>
+                        <span style="font-size:13px;color:#625C84">{{ step.repText }}</span>
+                      </div>
+                    </div>
+                    <div style="display:flex;flex-wrap:wrap;gap:5px;align-items:center">
+                      <sc-for list="{{ dots }}" as="d" hint-placeholder-count="18"><span style="width:{{ d.size }}px;height:{{ d.size }}px;border-radius:50%;background:{{ d.bg }};border:2px solid {{ d.bd }};box-sizing:border-box"></span></sc-for>
+                    </div>
+                    <div style="display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#625C84"><span style="display:flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:50%;background:#3E6FD8"></span>ponto baixo</span><span style="display:flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:50%;background:#B23A6E"></span>aumento</span><span style="display:flex;align-items:center;gap:5px"><span style="width:9px;height:9px;border-radius:50%;background:#7A55D3"></span>diminuição</span></div>
+                  </div>
+                  <sc-if value="{{ helpHidden }}"><button onClick="{{ openHelp }}" style="align-self:center;height:32px;border:none;background:transparent;font-size:13px;font-weight:700;color:#5B3BB0;cursor:pointer">Como funciona o contador?</button></sc-if>
+                  <div style="background:#DCEEFB;border-radius:18px;padding:16px;display:flex;flex-direction:column;gap:8px">
+                    <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#2F5BB8">O que fazer nesta volta</div>
+                    <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#4A5A80">{{ cur.raw }}</div>
+                    <div style="font-size:18px;line-height:1.6;font-weight:600"><sc-for list="{{ cur.segs }}" as="g"><sc-if value="{{ g.isText }}"><span>{{ g.text }}</span></sc-if><sc-if value="{{ g.isTerm }}"><span onClick="{{ g.pickW }}" style="background:#FDE7EF;color:#B23A6E;font-weight:700;border-radius:6px;padding:1px 5px;cursor:pointer;border-bottom:2px dotted #F4A6C0">{{ g.text }}</span></sc-if></sc-for></div>
+                  </div>
+                </div>
+                <div style="background:#fff;border:1px solid #E6E4F0;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:10px">
+                  <div style="font-family:'Fredoka',sans-serif;font-size:21px;font-weight:600;margin-bottom:4px">Receita completa</div>
+                  <sc-for list="{{ recipe }}" as="r" hint-placeholder-count="8">
+                    <button onClick="{{ r.pick }}" style="text-align:left;border:1.5px solid {{ r.bd }};background:{{ r.bg }};border-radius:14px;padding:10px 14px;display:flex;gap:14px;align-items:center;cursor:pointer;color:#2B2350">
+                      <span style="width:34px;height:34px;flex:none;border-radius:50%;background:#F7F8FC;display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-weight:600;font-size:15px">{{ r.num }}</span>
+                      <span style="flex:1;display:flex;flex-direction:column;gap:2px;min-width:0">
+                        <span style="font-size:14px;font-weight:600;line-height:1.4">{{ r.plain }}</span>
+                        <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#625C84">{{ r.raw }}</span>
+                      </span>
+                      <span style="font-size:13px;font-weight:700;color:#2F5BB8;white-space:nowrap">{{ r.total }} pts</span>
+                    </button>
+                  </sc-for>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ wIs.tradutor }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:20px">
+                <div style="display:flex;flex-direction:column;gap:4px">
+                  <div style="font-family:'Fredoka',sans-serif;font-size:30px;font-weight:600">Traduzir receita</div>
+                  <div style="font-size:15px;color:#625C84">Cole a receita em inglês ou com abreviações. A tradução aparece ao lado, linha por linha. Clique nas palavras rosa para aprender o ponto.</div>
+                </div>
+                <div style="display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:24px;align-items:start">
+                  <div style="background:#fff;border:1px solid #E6E4F0;border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:14px">
+                    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">
+                      <sc-for list="{{ sources }}" as="o" hint-placeholder-count="3"><button onClick="{{ o.go }}" style="height:56px;border-radius:14px;border:1.5px solid {{ o.bd }};background:{{ o.bg }};display:flex;align-items:center;justify-content:center;gap:8px;cursor:pointer;color:#2B2350"><span style="font-family:'Fredoka',sans-serif;font-size:15px;font-weight:600;color:#5B3BB0">{{ o.g }}</span><span style="font-size:13px;font-weight:700">{{ o.labelW }}</span></button></sc-for>
+                    </div>
+                    <sc-if value="{{ srcFile }}" hint-placeholder-val="{{ false }}">
+                      <div style="border-radius:16px;border:1.5px dashed #BFA9EE;background:repeating-linear-gradient(135deg,#fff 0 10px,#F7F8FC 10px 20px);padding:24px;display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center">
+                        <span style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#625C84">{{ srcHint }}</span>
+                        <button onClick="{{ readSrc }}" style="height:44px;padding:0 18px;border:none;border-radius:12px;background:#7A55D3;color:#fff;font-size:14px;font-weight:700;cursor:pointer">{{ readLabelW }}</button>
+                        <span style="font-size:12px;color:#625C84">No protótipo, usamos uma receita de exemplo.</span>
+                      </div>
+                    </sc-if>
+                    <sc-if value="{{ notice }}"><div style="background:#DCEEFB;border-radius:14px;padding:10px 14px;font-size:13px;font-weight:600;color:#2F5BB8">{{ notice }}</div></sc-if>
+                    <div style="display:flex;gap:8px;flex-wrap:wrap">
+                      <button onClick="{{ loadEN }}" style="height:36px;padding:0 14px;border-radius:18px;border:1px solid #E6E4F0;background:#fff;font-size:13px;font-weight:700;color:#2B2350;cursor:pointer">Exemplo em inglês</button>
+                      <button onClick="{{ loadPT }}" style="height:36px;padding:0 14px;border-radius:18px;border:1px solid #E6E4F0;background:#fff;font-size:13px;font-weight:700;color:#2B2350;cursor:pointer">Com abreviações</button>
+                      <button onClick="{{ clear }}" style="height:36px;padding:0 14px;border-radius:18px;border:none;background:transparent;font-size:13px;font-weight:700;color:#625C84;cursor:pointer">Limpar</button>
+                    </div>
+                    <textarea value="{{ input }}" onChange="{{ onInput }}" placeholder="Cole sua receita aqui…" style="height:300px;resize:none;border:1px solid #E6E4F0;border-radius:16px;padding:14px 16px;font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.7;color:#2B2350;background:#F7F8FC;box-sizing:border-box"></textarea>
+                  </div>
+                  <div style="display:flex;flex-direction:column;gap:12px">
+                    <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#625C84">Tradução · {{ lineCount }} linhas</div>
+                    <sc-if value="{{ noLines }}" hint-placeholder-val="{{ false }}">
+                      <div style="border:1.5px dashed #DAD7E8;border-radius:18px;padding:28px;text-align:center;font-size:15px;color:#625C84">Cole uma receita ao lado ou escolha um exemplo.</div>
+                    </sc-if>
+                    <sc-for list="{{ lines }}" as="l" hint-placeholder-count="4">
+                      <div style="background:#fff;border:1px solid #E6E4F0;border-radius:18px;padding:14px 18px;display:grid;grid-template-columns:150px minmax(0,1fr);gap:16px;align-items:start">
+                        <div style="display:flex;flex-direction:column;gap:6px;align-items:flex-start">
+                          <sc-if value="{{ l.label }}"><span style="background:#EEE8FB;color:#5B3BB0;font-size:12px;font-weight:700;border-radius:8px;padding:3px 8px">{{ l.label }}</span></sc-if>
+                          <sc-if value="{{ l.total }}"><span style="background:#DCEEFB;color:#2F5BB8;font-size:12px;font-weight:700;border-radius:8px;padding:3px 8px">total: {{ l.total }} pontos</span></sc-if>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:4px">
+                          <div style="font-size:16px;line-height:1.6;font-weight:600"><sc-for list="{{ l.segs }}" as="g"><sc-if value="{{ g.isText }}"><span>{{ g.text }}</span></sc-if><sc-if value="{{ g.isTerm }}"><span onClick="{{ g.pickW }}" style="background:#FDE7EF;color:#B23A6E;font-weight:700;border-radius:6px;padding:1px 5px;cursor:pointer;border-bottom:2px dotted #F4A6C0">{{ g.text }}</span></sc-if></sc-for></div>
+                          <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#625C84">{{ l.raw }}</div>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ wIs.grafico }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:20px">
+                <div style="display:flex;flex-direction:column;gap:4px">
+                  <div style="font-family:'Fredoka',sans-serif;font-size:30px;font-weight:600">Ler gráfico</div>
+                  <div style="font-size:15px;color:#625C84">Clique em uma carreira do diagrama para ver o que fazer, em palavras.</div>
+                </div>
+                <div style="display:flex;gap:14px;align-items:center;flex-wrap:wrap">
+                  <button onClick="{{ chartPhoto }}" style="height:46px;padding:0 20px;border-radius:14px;border:1.5px dashed #BFA9EE;background:#fff;font-size:14px;font-weight:700;color:#5B3BB0;cursor:pointer">{{ chartBtn }}</button>
+                  <sc-if value="{{ chartNotice }}"><div style="background:#DCEEFB;border-radius:14px;padding:10px 14px;font-size:13px;font-weight:600;color:#2F5BB8">{{ chartNotice }}</div></sc-if>
+                </div>
+                <div style="display:grid;grid-template-columns:minmax(0,1.4fr) minmax(0,1fr);gap:24px;align-items:start">
+                  <div style="background:#fff;border:1px solid #E6E4F0;border-radius:24px;padding:20px;display:flex;flex-direction:column;gap:16px">
+                    <div style="display:flex;flex-direction:column;gap:4px">
+                      <sc-for list="{{ chart }}" as="r" hint-placeholder-count="5">
+                        <div onClick="{{ r.pick }}" style="display:flex;align-items:center;gap:10px;padding:6px 10px;border-radius:14px;background:{{ r.bg }};cursor:pointer">
+                          <span style="width:72px;flex:none;font-size:13px;font-weight:700;color:#625C84">{{ r.label }}</span>
+                          <div style="flex:1;display:flex;flex-direction:{{ r.flow }}">
+                            <sc-for list="{{ r.cells }}" as="c"><span style="width:28px;height:32px;flex:none;display:flex;align-items:center;justify-content:center;font-size:{{ c.fsW }}px;font-weight:700;color:{{ c.color }}">{{ c.s }}</span></sc-for>
+                          </div>
+                          <span style="width:20px;flex:none;font-size:16px;color:#625C84">{{ r.arrow }}</span>
+                        </div>
+                      </sc-for>
+                    </div>
+                    <div style="display:flex;gap:20px;flex-wrap:wrap;font-size:14px;color:#625C84;border-top:1px solid #E6E4F0;padding-top:14px">
+                      <span><b style="color:#B23A6E;font-size:17px">○</b> corrente</span><span><b style="color:#3E6FD8;font-size:17px">×</b> ponto baixo</span><span><b style="color:#7A55D3;font-size:17px">Ŧ</b> ponto alto</span><span>As setas mostram o sentido de leitura</span>
+                    </div>
+                  </div>
+                  <div style="background:#DCEEFB;border-radius:24px;padding:24px;display:flex;flex-direction:column;gap:12px">
+                    <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#2F5BB8">{{ chartSel.dirText }}</div>
+                    <div style="font-family:'Fredoka',sans-serif;font-size:26px;font-weight:600">{{ chartSel.label }}</div>
+                    <div style="font-size:19px;line-height:1.6;font-weight:600"><sc-for list="{{ chartSel.segs }}" as="g"><sc-if value="{{ g.isText }}"><span>{{ g.text }}</span></sc-if><sc-if value="{{ g.isTerm }}"><span onClick="{{ g.pickW }}" style="background:#FDE7EF;color:#B23A6E;font-weight:700;border-radius:6px;padding:1px 5px;cursor:pointer;border-bottom:2px dotted #F4A6C0">{{ g.text }}</span></sc-if></sc-for></div>
+                    <div style="font-size:15px;line-height:1.5;color:#3A4A70;text-wrap:pretty">{{ chartSel.tip }}</div>
+                    <div style="display:flex;gap:10px;margin-top:6px">
+                      <button onClick="{{ chartPrev }}" style="height:44px;padding:0 16px;border-radius:12px;border:none;background:#fff;font-size:14px;font-weight:700;color:#2B2350;cursor:pointer">‹ Anterior</button>
+                      <button onClick="{{ chartNext }}" style="height:44px;padding:0 16px;border-radius:12px;border:none;background:#3E6FD8;color:#fff;font-size:14px;font-weight:700;cursor:pointer">Próxima carreira ›</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ wIs.glossario }}" hint-placeholder-val="{{ false }}">
+              <div style="display:flex;flex-direction:column;gap:20px">
+                <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:20px;flex-wrap:wrap">
+                  <div style="font-family:'Fredoka',sans-serif;font-size:30px;font-weight:600">Glossário</div>
+                  <input value="{{ q }}" onChange="{{ onQ }}" placeholder="Buscar: pb, sc, aumento…" style="width:320px;height:44px;border:1px solid #E6E4F0;border-radius:14px;padding:0 14px;font-size:15px;background:#fff;color:#2B2350;font-family:inherit;box-sizing:border-box">
+                </div>
+                <div style="display:grid;grid-template-columns:minmax(0,0.85fr) minmax(0,1.4fr);gap:24px;align-items:start">
+                  <div style="display:flex;flex-direction:column;gap:14px">
+                    <div style="background:#FDE7EF;border-radius:18px;padding:14px 16px;display:flex;flex-direction:column;gap:4px">
+                      <div style="font-weight:700;font-size:14px">Primeira vez? Comece por aqui</div>
+                      <div style="font-size:13px;line-height:1.45;color:#4A4470;text-wrap:pretty">Aprenda nesta ordem: nó corrediço, corrente e ponto baixo. Com esses três você já faz a primeira peça.</div>
+                    </div>
+                    <sc-for list="{{ glossGroups }}" as="gr" hint-placeholder-count="2">
+                      <div style="display:flex;flex-direction:column;gap:4px">
+                        <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#625C84;padding:6px 4px">{{ gr.title }}</div>
+                        <sc-for list="{{ gr.items }}" as="t" hint-placeholder-count="3">
+                          <button onClick="{{ t.pickG }}" style="text-align:left;border:1.5px solid {{ t.bd }};background:{{ t.bg }};border-radius:14px;padding:8px 12px;display:flex;gap:12px;align-items:center;cursor:pointer;color:#2B2350">
+                            <span style="flex:none;width:36px;height:36px;border-radius:10px;background:#EEE8FB;display:flex;align-items:center;justify-content:center;font-size:{{ t.symFsS }}px;font-weight:700;color:#5B3BB0">{{ t.symShow }}</span>
+                            <span style="flex:1;font-size:15px;font-weight:700">{{ t.pt }}</span>
+                            <span style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#625C84">{{ t.ab }} · {{ t.en }}</span>
+                          </button>
+                        </sc-for>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="background:#fff;border:1px solid #E6E4F0;border-radius:24px;padding:28px;display:flex;flex-direction:column;gap:20px">
+                    <div style="display:flex;gap:18px;align-items:center">
+                      <span style="flex:none;width:72px;height:72px;border-radius:20px;background:#FDE7EF;display:flex;align-items:center;justify-content:center;font-size:{{ gsel.symFsL }}px;font-weight:700;color:#B23A6E">{{ gsel.symShow }}</span>
+                      <div style="display:flex;flex-direction:column;gap:4px">
+                        <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#625C84">{{ gsel.catLabel }}</div>
+                        <div style="font-family:'Fredoka',sans-serif;font-size:30px;font-weight:600;line-height:1.1">{{ gsel.pt }}</div>
+                        <div style="font-family:'JetBrains Mono',monospace;font-size:12px;color:#625C84">{{ gsel.abbrLine }}</div>
+                      </div>
+                    </div>
+                    <div style="font-size:17px;line-height:1.55;text-wrap:pretty">{{ gsel.desc }}</div>
+                    <div style="display:flex;flex-direction:column;gap:20px">
+                      <div style="display:flex;flex-direction:column;gap:12px">
+                        <div style="font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:#625C84">Passo a passo</div>
+                        <sc-for list="{{ gsel.stepList }}" as="p" hint-placeholder-count="3">
+                          <div style="display:flex;gap:12px;align-items:flex-start">
+                            <span style="flex:none;width:30px;height:30px;border-radius:50%;background:#7A55D3;color:#fff;display:flex;align-items:center;justify-content:center;font-family:'Fredoka',sans-serif;font-size:15px;font-weight:600">{{ p.n }}</span>
+                            <span style="font-size:15px;line-height:1.5;padding-top:4px">{{ p.x }}</span>
+                          </div>
+                        </sc-for>
+                      </div>
+                    </div>
+                    <div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px">
+                      <div style="background:#DCEEFB;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:4px">
+                        <div style="font-size:12px;font-weight:700;color:#2F5BB8">Quando usar</div>
+                        <div style="font-size:14px;line-height:1.45">{{ gsel.use }}</div>
+                      </div>
+                      <div style="background:#FDE7EF;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:4px">
+                        <div style="font-size:12px;font-weight:700;color:#B23A6E">Cuidado com</div>
+                        <div style="font-size:14px;line-height:1.45">{{ gsel.tip }}</div>
+                      </div>
+                      <div style="background:#F7F8FC;border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:4px">
+                        <div style="font-size:12px;font-weight:700;color:#625C84">Na receita aparece assim</div>
+                        <div style="font-family:'JetBrains Mono',monospace;font-size:13px;line-height:1.5">{{ gsel.ex }}</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+
+        <sc-if value="{{ hasSelW }}" hint-placeholder-val="{{ false }}">
+          <div style="position:absolute;right:28px;bottom:28px;width:380px;max-height:640px;overflow-y:auto;box-sizing:border-box;background:#fff;border:1px solid #E6E4F0;border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:12px;box-shadow:0 24px 48px -20px rgba(43,35,80,.4)">
+            <div style="display:flex;gap:14px;align-items:center">
+              <span style="width:54px;height:54px;flex:none;border-radius:16px;background:#FDE7EF;display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:700;color:#B23A6E">{{ selW.symShow }}</span>
+              <div style="flex:1;display:flex;flex-direction:column;gap:2px">
+                <div style="font-family:'Fredoka',sans-serif;font-size:21px;font-weight:600">{{ selW.pt }}</div>
+                <div style="font-family:'JetBrains Mono',monospace;font-size:11px;color:#625C84">{{ selW.abbrLine }}</div>
+              </div>
+              <button onClick="{{ closeW }}" style="width:32px;height:32px;border-radius:10px;border:none;background:#F7F8FC;font-size:16px;color:#2B2350;cursor:pointer;align-self:flex-start">✕</button>
+            </div>
+            <div style="font-size:15px;line-height:1.55;text-wrap:pretty">{{ selW.desc }}</div>
+            <div style="display:flex;flex-direction:column;gap:8px">
+              <sc-for list="{{ selW.stepList }}" as="p" hint-placeholder-count="3">
+                <div style="display:flex;gap:10px;align-items:flex-start">
+                  <span style="flex:none;width:24px;height:24px;border-radius:50%;background:#7A55D3;color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">{{ p.n }}</span>
+                  <span style="font-size:14px;line-height:1.45;padding-top:2px">{{ p.x }}</span>
+                </div>
+              </sc-for>
+            </div>
+            <div style="background:#FDE7EF;border-radius:14px;padding:10px 12px;font-size:13px;line-height:1.45"><b style="color:#B23A6E">Cuidado com: </b>{{ selW.tip }}</div>
+            <button onClick="{{ openGlossW }}" style="height:40px;border:none;border-radius:12px;background:#EEE8FB;color:#5B3BB0;font-size:14px;font-weight:700;cursor:pointer">Ver no glossário</button>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+    </sc-if>
+  </div>
+</section>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const L = /[a-zà-ü]/i;
+const TERMS = [
+  {keys:['corrente','corr','ch'], pt:'corrente', pl:'correntes', ab:'corr', en:'ch', sym:'○', desc:'Faça uma laçada e puxe pela alça que está na agulha. É a base de quase toda receita.'},
+  {keys:['ponto baixíssimo','sl st','slst','pbx'], pt:'ponto baixíssimo', pl:'pontos baixíssimos', ab:'pbx', en:'sl st', sym:'•', desc:'Insira a agulha no ponto, faça uma laçada e puxe direto pelo ponto e pela alça da agulha. Usado para fechar voltas.'},
+  {keys:['ponto baixo','sc','pb'], pt:'ponto baixo', pl:'pontos baixos', ab:'pb', en:'sc', sym:'×', desc:'Insira a agulha no ponto e puxe uma laçada (ficam 2 alças). Faça outra laçada e passe pelas 2 alças.'},
+  {keys:['meio ponto alto','hdc','mpa'], pt:'meio ponto alto', pl:'meios pontos altos', ab:'mpa', en:'hdc', sym:'T', desc:'Faça 1 laçada, insira no ponto e puxe (ficam 3 alças). Faça outra laçada e passe pelas 3 de uma vez.'},
+  {keys:['ponto alto duplo','tr','pad'], pt:'ponto alto duplo', pl:'pontos altos duplos', ab:'pad', en:'tr', sym:'‡', desc:'Faça 2 laçadas, insira no ponto e puxe. Depois feche de 2 em 2 alças, três vezes.'},
+  {keys:['ponto alto','dc','pa'], pt:'ponto alto', pl:'pontos altos', ab:'pa', en:'dc', sym:'Ŧ', desc:'Faça 1 laçada, insira no ponto e puxe (3 alças). Laçada e passe por 2. Laçada e passe pelas 2 últimas.'},
+  {keys:['aumento','inc','aum'], pt:'aumento', pl:'aumentos', ab:'aum', en:'inc', sym:'V', desc:'Faça 2 pontos baixos no mesmo ponto. A peça ganha 1 ponto.'},
+  {keys:['diminuição','dec','dim'], pt:'diminuição', pl:'diminuições', ab:'dim', en:'dec', sym:'Λ', desc:'Junte 2 pontos em 1: puxe uma laçada no 1º ponto, outra no 2º, e feche tudo junto. A peça perde 1 ponto.'},
+  {keys:['anel mágico','magic ring','mr','am'], pt:'anel mágico', pl:'anel mágico', ab:'AM', en:'MR', sym:'◎', desc:'Um círculo de fio ajustável onde você faz os primeiros pontos. No final, puxe a ponta e ele fecha sem deixar furo.'},
+  {keys:['laçada','yo'], pt:'laçada', pl:'laçadas', ab:'laç', en:'yo', sym:'', desc:'Passe o fio por cima da agulha, de trás para a frente.'},
+  {keys:['blo'], pt:'só na alça de trás', pl:'só na alça de trás', ab:'alça tr.', en:'BLO', sym:'', desc:'Em vez de pegar as 2 alças do ponto, pegue só a de trás. Cria uma linha marcada na peça.'},
+  {keys:['flo'], pt:'só na alça da frente', pl:'só na alça da frente', ab:'alça fr.', en:'FLO', sym:'', desc:'Pegue só a alça da frente do ponto, a que está mais perto de você.'},
+];
+const EXTRA = [
+  {pt:'nó corrediço', ab:'nó', en:'slip knot', sym:'∞', desc:'Um nó com alça ajustável que prende o fio na agulha. Todo trabalho começa com ele.'},
+  {pt:'volta', ab:'V', en:'Rnd', sym:'↻', desc:'Quando o trabalho é em círculo (como amigurumi). Você não vira a peça, só continua girando.'},
+  {pt:'carreira', ab:'carr', en:'Row', sym:'⇄', desc:'Quando o trabalho é reto, de um lado ao outro. No fim de cada carreira, você vira a peça.'},
+];
+const PHRASES = [
+  ['in each st around','em cada ponto da volta'],['in each stitch around','em cada ponto da volta'],['in each st','em cada ponto'],
+  ['in next st','no próximo ponto'],['in same st','no mesmo ponto'],['fasten off','arremate'],['leave a long tail','deixe uma ponta longa'],
+  [/repeat\s+(\d+)\s+times/, r=>'repita '+r[1]+' vezes', 14],[/x\s*(\d+)/, r=>'repita '+r[1]+' vezes', 2],
+  ['repeat','repita'],['times','vezes'],['around','na volta toda'],['stitches','pontos'],['stitch','ponto'],['each','cada'],['turn','vire o trabalho'],
+  ['stuff','encha com fibra'],['join','una'],['with','com'],['and','e'],['next','próximo'],['into','em'],['in','no'],['sts','pontos'],['st','ponto'],['pts','pontos'],['pt','ponto'],
+];
+const esc = s => s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&').replace(/ /g,'\\s+');
+const MATCHERS = [];
+TERMS.forEach(t => t.keys.forEach(k => MATCHERS.push({re:new RegExp(esc(k),'iy'), len:k.length, term:t})));
+PHRASES.forEach(p => MATCHERS.push(typeof p[0]==='string' ? {re:new RegExp(esc(p[0]),'iy'), len:p[0].length, out:p[1]} : {re:new RegExp(p[0].source,'iy'), len:p[2], out:p[1]}));
+MATCHERS.sort((a,b)=>b.len-a.len);
+
+function tr(raw){
+  let s = raw.trim(); if(!s) return null;
+  let label='', total=null;
+  const lm = s.match(/^(rnds?|rounds?|rows?|r|v|vt|voltas?|carr|carreiras?)\.?\s*(\d+)(?:\s*(?:-|–|a|to)\s*(\d+))?\s*[:.)-]?\s*/i);
+  if(lm){ const noun = /^(rows?|carr|carreiras?)$/i.test(lm[1]) ? 'Carreira' : 'Volta';
+    label = lm[3] ? noun+'s '+lm[2]+' a '+lm[3] : noun+' '+lm[2]; s = s.slice(lm[0].length); }
+  const tm = s.match(/\(\s*(\d+)\s*(?:sts?|pts?|pontos)?\s*\)\s*\.?\s*$/i);
+  if(tm){ total = +tm[1]; s = s.slice(0,tm.index).trim(); }
+  s = s.replace(/\*([^*]+)\*/g,'($1)').replace(/\[([^\]]+)\]/g,'($1)');
+  const segs=[]; let buf=''; let i=0;
+  while(i<s.length){
+    let hit=null;
+    if(!L.test(i>0?s[i-1]:' ')){
+      for(const m of MATCHERS){ m.re.lastIndex=i; const r=m.re.exec(s); if(r && !L.test(s[i+r[0].length]||' ')){ hit={m,r}; break; } }
+    }
+    if(hit){
+      if(hit.m.term){ const n=(buf.match(/(\d+)\s*$/)||[])[1]; const t=hit.m.term;
+        if(buf) segs.push({text:buf}); buf=''; segs.push({term:t, text: n && +n>1 ? t.pl : t.pt}); }
+      else buf += typeof hit.m.out==='function' ? hit.m.out(hit.r) : hit.m.out;
+      i += hit.r[0].length;
+    } else { buf += s[i]; i++; }
+  }
+  if(buf) segs.push({text:buf});
+  if(segs[0]) segs[0] = {...segs[0], text: segs[0].text.charAt(0).toUpperCase()+segs[0].text.slice(1)};
+  return {raw, label, total, segs, plain: (label?label+': ':'')+segs.map(g=>g.text).join('')};
+}
+const DETAILS = {
+  'nó':{cat:'inicio', steps:['Faça um laço com o fio, deixando a ponta solta por baixo.','Puxe o fio que vem do novelo por dentro do laço, formando uma alça.','Coloque a alça na agulha e puxe a ponta para ajustar, sem apertar demais.'], use:'É sempre o primeiro passo, antes da primeira corrente.', tip:'O nó corrediço não conta como ponto.', ex:'Normalmente não aparece. A receita já começa nas correntes.'},
+  'corr':{cat:'inicio', steps:['Comece com um nó corrediço na agulha.','Passe o fio por cima da agulha (laçada).','Puxe essa laçada por dentro da alça que já está na agulha.','Pronto: 1 corrente. Repita para fazer mais.'], use:'Na base de trabalhos retos e para subir de altura no começo de cada carreira.', tip:'Correntes muito apertadas dificultam a carreira seguinte. Deixe-as soltinhas.', ex:'12 corr  ·  ch 12'},
+  'AM':{cat:'inicio', steps:['Enrole o fio em volta de 2 dedos, formando um círculo.','Insira a agulha no círculo, pegue o fio e puxe uma alça.','Faça 1 corrente para firmar (ela não conta como ponto).','Faça os pontos pedidos por dentro do círculo, cobrindo as 2 linhas.','Puxe a ponta solta do fio para fechar o círculo.'], use:'No começo de peças redondas, como amigurumi, gorros e mandalas.', tip:'Só puxe a ponta para fechar depois de fazer todos os pontos da 1ª volta.', ex:'6 pb no AM  ·  6 sc in magic ring'},
+  'laç':{cat:'inicio', steps:['Segure a agulha com o gancho virado para baixo.','Passe o fio por cima da agulha, de trás para a frente.'], use:'Faz parte de quase todos os pontos. Quando a receita diz "laçada", é só esse movimento.', tip:'O fio passa sempre de trás para a frente. Ao contrário, o ponto fica torcido.', ex:'laç  ·  yo'},
+  'pbx':{cat:'basicos', steps:['Insira a agulha no ponto.','Faça uma laçada.','Puxe a laçada pelo ponto e pela alça da agulha, tudo de uma vez.'], use:'Para fechar uma volta (unir o último ponto ao primeiro) ou para andar sem ganhar altura.', tip:'É o ponto mais baixo de todos. Não faça laçada antes de inserir a agulha.', ex:'feche com pbx  ·  join with sl st'},
+  'pb':{cat:'basicos', steps:['Insira a agulha no ponto, por baixo das 2 alças.','Faça uma laçada e puxe. Agora há 2 alças na agulha.','Faça outra laçada.','Passe pelas 2 alças de uma vez.'], use:'É o ponto mais usado em amigurumi. Forma um tecido firme e fechado.', tip:'Conte as alças: depois de puxar a primeira laçada, tem que haver 2.', ex:'6 pb  ·  6 sc'},
+  'mpa':{cat:'basicos', steps:['Faça 1 laçada antes de inserir a agulha.','Insira no ponto, faça laçada e puxe. Agora há 3 alças.','Faça uma laçada e passe pelas 3 alças de uma vez.'], use:'Fica entre o ponto baixo e o ponto alto. Bom para gorros e mantas.', tip:'A diferença para o ponto alto: aqui você fecha as 3 alças juntas.', ex:'10 mpa  ·  10 hdc'},
+  'pa':{cat:'basicos', steps:['Faça 1 laçada antes de inserir a agulha.','Insira no ponto, faça laçada e puxe. Agora há 3 alças.','Laçada e passe por 2 alças (sobram 2).','Laçada e passe pelas 2 últimas.'], use:'Ponto alto e mais aberto, cresce rápido. Comum em mantas, xales e squares.', tip:'No começo da carreira, 3 correntes costumam contar como o 1º ponto alto.', ex:'11 pa  ·  11 dc'},
+  'pad':{cat:'basicos', steps:['Faça 2 laçadas antes de inserir a agulha.','Insira no ponto, laçada e puxe. Agora há 4 alças.','Laçada e passe por 2. Repita mais 2 vezes, até sobrar 1 alça.'], use:'Ponto bem alto, usado em rendas e acabamentos.', tip:'Feche sempre de 2 em 2 alças, três vezes.', ex:'5 pad  ·  5 tr'},
+  'aum':{cat:'forma', steps:['Faça 1 ponto baixo normalmente.','No mesmo ponto onde acabou de trabalhar, faça outro ponto baixo.','Agora há 2 pontos onde antes havia 1.'], use:'Para a peça crescer, como no começo de uma bolinha de amigurumi.', tip:'Cada aumento soma 1 ponto ao total. Confira o número entre parênteses no fim da volta.', ex:'6 aum  ·  inc x6'},
+  'dim':{cat:'forma', steps:['Insira a agulha no 1º ponto, faça laçada e puxe (2 alças).','Insira no 2º ponto, faça laçada e puxe (3 alças).','Faça laçada e passe pelas 3 alças de uma vez.'], use:'Para a peça diminuir, como para fechar o fim de uma bolinha.', tip:'Cada diminuição tira 1 ponto do total. Em amigurumi, a "diminuição invisível" pega só a alça da frente dos 2 pontos.', ex:'6 dim  ·  dec x6'},
+  'alça tr.':{cat:'receita', steps:['Olhe o topo do ponto: ele tem 2 alças, uma na frente e uma atrás.','Insira a agulha só na alça de trás, a mais longe de você.','Faça o ponto pedido normalmente.'], use:'Cria uma linha em relevo. Muito usado na base de sapatinhos e cestos.', tip:'Faça a volta inteira desse jeito, a menos que a receita diga outra coisa.', ex:'pb só na alça de trás  ·  sc in BLO'},
+  'alça fr.':{cat:'receita', steps:['Olhe o topo do ponto e encontre as 2 alças.','Insira a agulha só na alça da frente, a mais perto de você.','Faça o ponto pedido normalmente.'], use:'Deixa a alça de trás livre para trabalhar depois, como em babados.', tip:'Não confunda com a alça de trás: a da frente é a que fica voltada para você.', ex:'pb só na alça da frente  ·  sc in FLO'},
+  'V':{cat:'receita', steps:['Faça os pontos da volta em círculo.','No fim, não vire a peça: siga direto para a próxima volta.','Coloque um marcador no 1º ponto para saber onde cada volta começa.'], use:'Em peças redondas: amigurumi, gorros, mandalas.', tip:'Sem marcador é fácil perder a conta. Um clipe ou fio de outra cor serve.', ex:'V1, V2…  ·  Rnd 1, Rnd 2…'},
+  'carr':{cat:'receita', steps:['Faça os pontos de um lado ao outro.','No fim, vire a peça.','Faça as correntes para subir e comece a próxima carreira.'], use:'Em peças retas: cachecóis, mantas, panos.', tip:'Conte os pontos no fim de cada carreira. Se a peça entortar, algum ponto sumiu ou sobrou.', ex:'Carr 1  ·  Row 1'},
+};
+const CATS = [['inicio','Para começar'],['basicos','Pontos básicos'],['forma','Aumentar e diminuir'],['receita','Termos da receita']];
+const CAT_LABEL = Object.fromEntries(CATS);
+const deco = t => { if(!t) return {}; const d = DETAILS[t.ab] || {}; return {...t, ...d, symShow: t.sym || t.ab, symFs: t.sym ? 22 : 13, symFsS: t.sym ? 18 : 11, symFsL: t.sym ? 34 : 16, abbrLine: 'PT: '+t.ab+'  ·  EN: '+t.en, catLabel: CAT_LABEL[d.cat] || '', stepList: (d.steps||[]).map((x,i)=>({n:i+1, x}))}; };
+
+const SAMPLE_EN = "Rnd 1: 6 sc in magic ring (6)\nRnd 2: inc in each st around (12)\nRnd 3: *sc, inc* repeat 6 times (18)\nRnd 4: *2 sc, inc* x6 (24)\nRnd 5-8: sc in each st around (24)\nRnd 9: *2 sc, dec* x6 (18)\nFasten off, leave a long tail.";
+const SAMPLE_PT = "V1: 6 pb no AM (6)\nV2: 6 aum (12)\nV3: (1 pb, 1 aum) x6 (18)\nV4: 1 pb em cada pt (18)\nV5: (1 pb, 1 dim) x6 (12)\nFeche com pbx e arremate.";
+const RECEITA = ['V1: 6 pb no AM (6)','V2: 6 aum (12)','V3: (1 pb, 1 aum) x6 (18)','V4: (2 pb, 1 aum) x6 (24)','V5: (3 pb, 1 aum) x6 (30)','V6: 30 pb (30)','V7: (3 pb, 1 dim) x6 (24)','V8: (2 pb, 1 dim) x6 (18)'];
+const rep = (s,n) => Array(n).fill(s);
+const GRAF = [
+  {label:'Base', short:'B', text:'12 corr', syms:rep('○',12), dir:'→', dirText:'Comece aqui', tip:'Faça 12 correntes. Elas são a base de todo o trabalho.'},
+  {label:'Carreira 1', short:'1', text:'1 corr, 12 pb', syms:['○',...rep('×',12)], dir:'←', dirText:'Leia da direita para a esquerda', tip:'A corrente do começo serve só para subir de altura e não conta como ponto.'},
+  {label:'Carreira 2', short:'2', text:'Vire o trabalho, 3 corr, 11 pa', syms:['3○',...rep('Ŧ',11)], dir:'→', dirText:'Leia da esquerda para a direita', tip:'As 3 correntes do começo contam como o 1º ponto alto. Por isso são só mais 11.'},
+  {label:'Carreira 3', short:'3', text:'Vire o trabalho, 1 corr, 12 pb', syms:['○',...rep('×',12)], dir:'←', dirText:'Leia da direita para a esquerda', tip:'Igual à carreira 1: 1 corrente para subir e 12 pontos baixos.'},
+  {label:'Carreira 4', short:'4', text:'Vire o trabalho, 3 corr, 11 pa', syms:['3○',...rep('Ŧ',11)], dir:'→', dirText:'Leia da esquerda para a direita', tip:'Igual à carreira 2. Ao terminar, arremate o fio.'},
+];
+const NAV = [{id:'inicio',label:'Início',g:'⌂'},{id:'contador',label:'Contador',g:'+1'},{id:'tradutor',label:'Traduzir',g:'Aa'},{id:'grafico',label:'Gráfico',g:'×'},{id:'glossario',label:'Glossário',g:'≡'}];
+const COL = {'○':'#B23A6E','3○':'#B23A6E','×':'#3E6FD8','Ŧ':'#7A55D3'};
+const BY_AB = Object.fromEntries(TERMS.map(t=>[t.ab.toLowerCase(), t]));
+const DOT = {pb:'#3E6FD8', aum:'#B23A6E', dim:'#7A55D3'};
+function parseSeq(raw){
+  const s = raw.replace(/^V\d+:\s*/,'').replace(/\(\d+\)\s*$/,'').trim();
+  const g = s.match(/^\((.+)\)\s*x(\d+)/);
+  const times = g ? +g[2] : 1, unit = [];
+  (g ? g[1] : s).split(',').forEach(p=>{ const m=p.trim().match(/^(\d+)\s+(\w+)/); if(m) for(let k=0;k<+m[1];k++) unit.push(m[2].toLowerCase()); });
+  const am = /\bAM\b/.test(s), st = [];
+  for(let r=0;r<times;r++) unit.forEach(a=>{
+    if(a==='aum'){ st.push({a,rep:r,part:'1º ponto do aumento'}); st.push({a,rep:r,part:'2º ponto, no mesmo lugar'}); }
+    else st.push({a,rep:r,part: a==='dim' ? 'junte 2 pontos em 1' : am ? 'dentro do anel mágico' : 'no próximo ponto'});
+  });
+  return {st, times};
+}
+const SOURCES = [{id:'texto',label:'Colar texto',labelW:'Colar texto',g:'Aa'},{id:'foto',label:'Foto',labelW:'Foto da receita',g:'◉'},{id:'pdf',label:'PDF',labelW:'Enviar PDF',g:'PDF'}];
+
+class Component extends DCLogic {
+  state = { device:'mobile', screenM:'contador', screenW:'contador', row:2, count:11, input:SAMPLE_EN, chartRow:2, selM:null, selW:null, q:'', help:true, glossW:'pb', draft:'', src:'texto', reading:false, notice:'', chartReading:false, chartNotice:'' };
+  readSrc = () => { if(this.state.reading) return; const pdf = this.state.src==='pdf'; this.setState({reading:true});
+    setTimeout(()=>this.setState({reading:false, src:'texto', input: pdf ? SAMPLE_PT : SAMPLE_EN, notice: pdf ? 'Lemos o PDF. Confira se o texto está igual à receita.' : 'Lemos a foto. Confira se o texto está igual à receita.'}), 1200); };
+  chartPhoto = () => { if(this.state.chartReading) return; this.setState({chartReading:true, chartNotice:''});
+    setTimeout(()=>this.setState({chartReading:false, chartRow:0, chartNotice:'Encontramos 5 carreiras com corrente, ponto baixo e ponto alto.'}), 1400); };
+  componentDidMount(){
+    this._key = e => { if(e.code==='Space' && this.state.device==='web' && this.state.screenW==='contador' && !/INPUT|TEXTAREA/.test(document.activeElement?.tagName||'')){ e.preventDefault(); this.plus(); } };
+    window.addEventListener('keydown', this._key);
+  }
+  componentWillUnmount(){ window.removeEventListener('keydown', this._key); }
+  plus = () => { try{ navigator.vibrate && navigator.vibrate(15); }catch(e){} this.setState(s=>({count:s.count+1})); };
+  segs(list){ return list.map(g=>({text:g.text, isTerm:!!g.term, isText:!g.term, pickM:()=>this.setState({selM:g.term}), pickW:()=>this.setState({selW:g.term})})); }
+  renderVals(){
+    const s = this.state;
+    const recipe = RECEITA.map((t,i)=>{ const l=tr(t); return {...l, segs:this.segs(l.segs), num:i+1, bg:i===s.row?'#EEE8FB':'#fff', bd:i===s.row?'#7A55D3':'#E6E4F0', pick:()=>this.setState({row:i,count:0})}; });
+    const cur = recipe[s.row]; const meta = cur.total; const done = s.count>=meta;
+    const lines = s.input.split('\n').map(tr).filter(Boolean).map(l=>({...l, segs:this.segs(l.segs)}));
+    const chart = GRAF.map((r,i)=>({...r, i, bg:i===s.chartRow?'#EEE8FB':'transparent', flow:r.dir==='←'?'row-reverse':'row', arrow:r.dir,
+      cells:r.syms.map(c=>({s:c, color:COL[c]||'#2B2350', fs:c.length>1?11:17, fsW:c.length>1?14:22})), pick:()=>this.setState({chartRow:i})})).reverse();
+    const g = GRAF[s.chartRow];
+    const chartSel = {...g, segs:this.segs(tr(g.text).segs)};
+    const q = s.q.trim().toLowerCase();
+    const all = [...TERMS, ...EXTRA];
+    const gloss = all.map(deco).filter(t=>!q || [t.pt,t.ab,t.en,t.desc].join(' ').toLowerCase().includes(q)).map((t,i)=>({...t, bg: s.glossW===t.ab?'#EEE8FB':'#fff', bd: s.glossW===t.ab?'#7A55D3':'#E6E4F0', pickM:()=>this.setState({selM:all.find(x=>x.ab===t.ab)}), pickG:()=>this.setState({glossW:t.ab})}));
+    const glossGroups = CATS.map(([id,title])=>({title, items: gloss.filter(t=>t.cat===id)})).filter(g=>g.items.length);
+    const gsel = deco(all.find(t=>t.ab===s.glossW) || TERMS[2]);
+    const is = v => Object.fromEntries(NAV.map(n=>[n.id, v===n.id]));
+    const go = k => Object.fromEntries(NAV.map(n=>[n.id, ()=>this.setState({[k]:n.id})]));
+    const rowTotal = RECEITA.length;
+    const seq = parseSeq(RECEITA[s.row]); const k = s.count; const stc = seq.st[k];
+    const nm = a => (BY_AB[a] || {pt:a}).pt;
+    const pickT = (a, key) => () => BY_AB[a] && this.setState({[key]: BY_AB[a]});
+    const step = stc ? {
+      now: nm(stc.a), part: stc.part,
+      next: seq.st[k+1] ? nm(seq.st[k+1].a) : 'fim da volta',
+      repText: seq.times>1 ? 'repetição '+(stc.rep+1)+' de '+seq.times : 'ponto '+(k+1)+' de '+seq.st.length,
+      pickM: pickT(stc.a,'selM'), pickW: pickT(stc.a,'selW'),
+    } : { now:'Volta completa!', part:'Você fez todos os pontos.', next: s.row+1<rowTotal ? 'Volta '+(s.row+2) : 'fim da peça', repText:'', pickM:()=>{}, pickW:()=>{} };
+    const dots = seq.st.map((d,i)=>{ const c = DOT[d.a] || '#2B2350'; return { size: i===k?14:10, bg: i<k ? c : i===k ? '#fff' : '#E6E4F0', bd: i<=k ? c : '#E6E4F0' }; });
+    const srcFile = s.src!=='texto';
+    return {
+      isMobile: s.device==='mobile', isWeb: s.device==='web',
+      toMobile:()=>this.setState({device:'mobile'}), toWeb:()=>this.setState({device:'web'}),
+      tabM: s.device==='mobile' ? {bg:'#7A55D3',fg:'#fff'} : {bg:'transparent',fg:'#2B2350'},
+      tabW: s.device==='web' ? {bg:'#7A55D3',fg:'#fff'} : {bg:'transparent',fg:'#2B2350'},
+      step, dots, showHelp:s.help, helpHidden:!s.help, hideHelp:()=>this.setState({help:false}), openHelp:()=>this.setState({help:true}),
+      sources: SOURCES.map(o=>({...o, bd: s.src===o.id?'#7A55D3':'#E6E4F0', bg: s.src===o.id?'#EEE8FB':'#fff', go:()=>this.setState({src:o.id, notice:''})})),
+      srcFile, srcHint: s.src==='pdf' ? 'arquivo PDF da receita' : 'foto da receita',
+      readSrc:this.readSrc,
+      readLabel: s.reading ? 'Lendo a receita…' : s.src==='pdf' ? 'Escolher PDF' : 'Tirar foto',
+      readLabelW: s.reading ? 'Lendo a receita…' : s.src==='pdf' ? 'Escolher arquivo PDF' : 'Enviar foto',
+      notice:s.notice,
+      chartPhoto:this.chartPhoto, chartBtn: s.chartReading ? 'Lendo o gráfico…' : 'Enviar foto do gráfico', chartNotice:s.chartNotice,
+      mIs:is(s.screenM), wIs:is(s.screenW), goM:go('screenM'), goW:go('screenW'),
+      navM: NAV.map(n=>({...n, fg:s.screenM===n.id?'#5B3BB0':'#625C84', bg:s.screenM===n.id?'#EEE8FB':'transparent', go:()=>this.setState({screenM:n.id})})),
+      navW: NAV.map(n=>({...n, fg:s.screenW===n.id?'#5B3BB0':'#4A4470', bg:s.screenW===n.id?'#EEE8FB':'transparent', go:()=>this.setState({screenW:n.id})})),
+      recipe, cur, meta, count:s.count, done, notDone:!done, rowNum:s.row+1, rowTotal,
+      pct: Math.min(100, Math.round(s.count/meta*100)),
+      projPct: Math.round(((s.row + Math.min(1, s.count/meta))/rowTotal)*100),
+      plus:this.plus,
+      minus:()=>this.setState(st=>({count:Math.max(0,st.count-1)})),
+      reset:()=>this.setState({count:0}),
+      nextRow:()=>this.setState(st=>({row:Math.min(rowTotal-1,st.row+1), count:0})),
+      prevRow:()=>this.setState(st=>({row:Math.max(0,st.row-1), count:0})),
+      input:s.input, onInput:e=>this.setState({input:e.target.value}),
+      loadEN:()=>this.setState({input:SAMPLE_EN}), loadPT:()=>this.setState({input:SAMPLE_PT}), clear:()=>this.setState({input:''}),
+      lines, lineCount:lines.length, noLines:lines.length===0,
+      chart, chartSel,
+      chartPrev:()=>this.setState(st=>({chartRow:Math.max(0,st.chartRow-1)})),
+      chartNext:()=>this.setState(st=>({chartRow:Math.min(GRAF.length-1,st.chartRow+1)})),
+      q:s.q, onQ:e=>this.setState({q:e.target.value}), gloss,
+      hasSelM:!!s.selM, selM:deco(s.selM), closeM:()=>this.setState({selM:null}),
+      hasSelW:!!s.selW, selW:deco(s.selW), closeW:()=>this.setState({selW:null}),
+      openGlossW:()=>this.setState(st=>({glossW:st.selW.ab, selW:null, screenW:'glossario', q:''})),
+      glossGroups, gsel,
+      draft:s.draft, onDraft:e=>this.setState({draft:e.target.value}),
+      translateDraft:()=>this.setState(st=>({input: st.draft.trim() ? st.draft : st.input, draft:'', src:'texto', notice:'', screenM:'tradutor', screenW:'tradutor'})),
+      homeFoto:()=>this.setState({src:'foto', notice:'', screenM:'tradutor', screenW:'tradutor'}),
+      homePdf:()=>this.setState({src:'pdf', notice:'', screenM:'tradutor', screenW:'tradutor'}),
+    };
+  }
+}
+</script>
+</body>
+</html>
